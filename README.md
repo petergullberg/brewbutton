@@ -87,7 +87,7 @@ In investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001
  |   if you want water first.                  |
  +---------------------------------------------+
 
-Execute command:
+Brew command:
  +---------------------------------------------+
  |  03 05 07 04 00 00 00 00 {00} {07}          |
  +---------------------------------------------+
@@ -95,8 +95,19 @@ Execute command:
  | - 07 = Recipe                               |
  +---------------------------------------------+
 
+To brew a recipe coffe, you write preparation command and then the brew command. When doing the analysis, the app sends 
 What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume
+
 ```
+
+Flow when the App brews coffee
+------------------------------
+Prepare command    ------->   Write char (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C) 10B
+Read Char          <-------   Read char (0x0026) 20B
+Brew command       ------->   Write char (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C) 10B 
+Read Char          <-------   Read (0x0026) 20B
+Read STATUS        <-------   Read 0x001C 8B
+
 
 
 STATUS
@@ -127,6 +138,11 @@ Examples:
 Other status - tbd
 ------------------
 0x26 (R)
+
+What I noticed after performing prepare recipe reading the value was
+811001200000.... (20B)
+and after brew command the value was:
+830501200000.... (20B)
 
 
 Other protocol details I plan to investigate:
