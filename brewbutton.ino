@@ -1,4 +1,3 @@
-/* This is not even an release, but I wanted to post it anyway */
 /**
  * NESPRESSO BLE INTERFACE
  * In the shitty NESPRESSO coffee maker, it is not possible to program
@@ -16,6 +15,46 @@
  * 
  */
 
+/*
+Nespresso Expert machine Hack (Bluetooth)
+Nespresso Expert machine has the Bluetooth ability which officially can be used only by Nespresso mobile app and it does not offer any API for 3rd party applications and services. Moreover, the Bluetooth services and characteristics are not documented and easy to use by the other Bluetooth libraries plus there is no documentation for the Bluetooth packets payload that need to be sent or received.
+However, after searching a lot and sniffing the packets for a couple of days, I've been able to hack the machine and write the small nodejs application using noble and express to control and monitor the machine with Rest API exposed by express through Bluetooth connection. As I did this application for my ex-company and they are still using it for their demo I cannot share the code but I'm going to explain how it works.
+
+Thanks to this repo: https://github.com/fsalomon/nespresso-expert-ble and also this nice medium post https://medium.com/@urish/reverse-engineering-a-bluetooth-lightbulb-56580fcb7546 that basically helped me to understand how I need to sniff the packets.
+
+Sniffing
+first I have installed the Nespresso app on my mobile and I connected to the machine and used the application. Then, using the post I mentioned above, I sniffed the packets and opened them in the Wireshark to analyze them.
+
+Authentication
+I notice that everytime on the app we start communicating with the machine (brew or monitor or just oppening machine tab) it starts the conversation with a packet that has "8" at the start of its value and has 16 characters (mine was 85c55bc324a4170b) and it is writting on the 4th characteristic of the service 06aa1910f22a11e39daa0002a5d5c51b. note: only one mobile can connect to the expert machine and everytime that new mobile connects (which needs the device reset) the authentication packet will change.
+
+I have used noble library for ble communication. I mention some hints ;) Authentication will be done by writing to 4th characteristic of the first service Buffer.from("85c55bc324a4170b", "hex"). after writing when you read the 5th characteristic, the data should be "2" which means authenticaton was successful.
+
+Communication
+I don't know why, and dont ask me please but before sending the brew command you need to write this Buffer.from("01100800000200c8000000", "hex") on the 4th charac of the second service ("06aa1920f22a11e39daa0002a5d5c51b") and then inside the callback, you write this Buffer.from("03050704000000000101", "hex") which is low temp espresso. Now you machine should start brewing... yayyyy
+
+below I leave all of my notes in case it can be useful
+
+Brewing Types
+Here are my observations:
+
+0305070400000000 00 00 medium ristretto
+0305070400000000 01 01 low espresso
+0305070400000000 02 02 high lungo
+0305070400000000 01 04 low hot water
+0305070400000000 01 05 low americano
+0305070400000000 01 07 low probably cleaning mode (all lights turning on together)
+03060102 would stop the brewing (not always)
+
+Machine Alarms (Errors)
+On the second service, on 0th charac read normally is like 0:64 1:9 2:13 3:64 4:128 5:0 6:255 7:255.
+
+0: 64 is ok, 65: no water
+1: 64 with 132 is brewing or busy , 64 with 2 ready , 64 with 66/67/7x :full disposal or no disposal on second service, on 4th charac read normally is like: 0:129 1:16 2:1 3:32 4:0 5:0 6:0 7:0 8:0 9:0 10:0 11:0 12:0 13:0 14:0 15:0 16:0 17:0 18:0 19:0
+For understanding slide error, read should be done after command of brew
+
+1: 195 slider error, 129 ok, 131 busy brewing
+*/
 /*
 TODO'S:
 * Implement onan ESP32 Wroom
@@ -299,7 +338,7 @@ unsigned long debounceDelay = 50;    // the debounce time; increase if the outpu
 
 void initButton( void )
 {
-  pinMode(buttonPin, INPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
   buttonState = LOW;    // Initalize button state
   // set initial LED state
@@ -384,13 +423,20 @@ void loop() {
   // If we are connected to a peer BLE Server, update the characteristic each time we are reached
   // with the current time since boot.
   if (connected) {
-    String newValue = "Time since boot: " + String(millis()/1000);
-    Serial.println("Setting new characteristic value to \"" + newValue + "\"");
-
-    //test
     
+    if ( 0 == cnt ) {    // Just to slow down serial printing
+      String newValue = "Time since boot: " + String(millis()/1000);
+      Serial.println("Setting new characteristic value to \"" + newValue + "\"");
+    }
     cnt++;
-    if ( cnt >9 ) {
+    if ( cnt > 100 ) {
+      cnt=0;
+    }
+
+    if ( detectPress() ) {
+      // Time to brew!
+      Serial.println("===================");
+      Serial.println("Keypress detected: ");
       uint8_t perfectRecipe[] = {0x01,0x10,0x08,0x00,0x00,0x01,0x00,0x82,0x00,0x00,0x00};
       uint8_t perfectRecipeBrew[] = { 0x03, 0x05, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x01, 0x07 };
       uint8_t auth[] = { 0x87, 0x96, 0x08, 0xe2, 0x7c, 0xb1,0xf9,0x6e};
@@ -403,42 +449,11 @@ void loop() {
       delay(100);
       pRemoteCharacteristicCommand->writeValue( perfectRecipeBrew, sizeof(perfectRecipeBrew), true );
       delay(1000);
-      //std::string value = pRemoteCharacteristicStatus->readValue();
-      //Serial.print("The characteristic value is currently: ");
-
-      //memcpy(_value,value.c_str(),value.length());
-      //Serial.printf("%x %x %x %x\n", _value[0], _value[1], _value[2], _value[3]);      
-      //len = value.length();
-      //Serial.print(" ");
-      //Serial.println(len.c_str());
 
       delay(100);
       
-      
-      cnt = 0;
-    }
-    else {
-      String newValue = "Cnt: " + String(cnt);
-      Serial.println("Waiting\"" + newValue + "\"");
-    }
-
-
-
-
-    
-    // Set the characteristic's value to be the array of bytes that is actually a string.
-    // read the state of the pushbutton value:
-    if ( detectPress() ) {
-      // Time to brew!
-      String brew_str = brew_cmd(LUNGO, TEMP_HIGH);
-      
-      // SEND NESPRESSO CMD
-      // reference obtained in connect
-      
-      //pRemoteCharacteristicAuth->writeValue( brew_str.c_str(), brew_str.length() );
-      //Serial.print("The characteristic written value was: ");
-      //Serial.println(brew_str.c_str());
-      
+      Serial.println("The perfect brew is about to be delivered");
+      Serial.println("===================");
 
     }
 
@@ -446,5 +461,5 @@ void loop() {
     BLEDevice::getScan()->start(0);  // this is just eample to start scan after disconnect, most likely there is better way to do it in arduino
   }
   
-  delay(1000); //  a second between loops.
+  delay(100); //  a second between loops.
 } // End of loop
