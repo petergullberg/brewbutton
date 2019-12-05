@@ -4,8 +4,8 @@
  * the amount of water that goes through the capsule from the outside.
  * Therefore this setup was needed. Was thinking of throwing it out.
  * But realized I neede the BLE Client skills for a number of other devices at home
- * 
- * This repository is based on BLE client example that is rich in capabilities.
+ *  * 
+ * Based on BLE client example that is rich in capabilities.
  * There is a lot new capabilities implemented.
  * author unknown
  * updated by chegewara
@@ -15,8 +15,9 @@
  * 
  */
 
+
+#define CONFIG_BLE_SMP_ENABLE 1
 #include <string.h>
-#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 #include "esp_log.h"
 
 #include "BLEDevice.h"
@@ -35,11 +36,6 @@
 #define HOTWATER	"05"
 #define RECIPE		"07"
 char cmd[128];    // UGLY hack, which re-uses a dedicated buffer
-int _MY_LOG( char *tag, int rc)
-{
-    Serial.print(tag);
-}
-
 
 /*
 #define uint_16   unsigned int
@@ -75,7 +71,6 @@ char *brew_recipe(uint_16 coffee_size, uint_16 water_size, byte reversed )
   }
   return cmd;  
 }
-*/
 char *brew_cmd(char *vol, char *temp )
 {
 	strcpy(cmd, "0305070400000000");
@@ -83,13 +78,14 @@ char *brew_cmd(char *vol, char *temp )
 	strcat(cmd, vol);
 	return cmd;
 }
+*/
 
 /*********************** END BREW COMMAND STUFF ***********************/
 
 // The remote service we wish to connect to.
 // NESPRESSO DEVICE UUID
 
-        // Auth Characteristics
+// Auth Characteristics
 
 
 // The characteristic of the remote service we are interested in.
@@ -299,6 +295,7 @@ void initButton( void )
 }
 
 // This returns true once if it detects a keypress
+// this triggers on the rising edge, meaning that keybrewing stars when you release the button
 int detectPress(void) 
 {
   // read the state of the switch into a local variable:
@@ -324,7 +321,7 @@ int detectPress(void)
     if (inputValue != buttonState) {
       buttonState = inputValue;
       if ( buttonState )
-        fDetectPress = true;    // Only detec on rising edge, debounced
+        fDetectPress = true;    // Only detect on rising edge, debounced
     }
   }
 
