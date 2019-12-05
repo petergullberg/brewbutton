@@ -4,8 +4,8 @@
  * the amount of water that goes through the capsule from the outside.
  * Therefore this setup was needed. Was thinking of throwing it out.
  * But realized I neede the BLE Client skills for a number of other devices at home
- *  * 
- * A BLE client example that is rich in capabilities.
+ * 
+ * This repository is based on BLE client example that is rich in capabilities.
  * There is a lot new capabilities implemented.
  * author unknown
  * updated by chegewara
@@ -15,53 +15,6 @@
  * 
  */
 
-/*
-Nespresso Expert machine Hack (Bluetooth)
-Nespresso Expert machine has the Bluetooth ability which officially can be used only by Nespresso mobile app and it does not offer any API for 3rd party applications and services. Moreover, the Bluetooth services and characteristics are not documented and easy to use by the other Bluetooth libraries plus there is no documentation for the Bluetooth packets payload that need to be sent or received.
-However, after searching a lot and sniffing the packets for a couple of days, I've been able to hack the machine and write the small nodejs application using noble and express to control and monitor the machine with Rest API exposed by express through Bluetooth connection. As I did this application for my ex-company and they are still using it for their demo I cannot share the code but I'm going to explain how it works.
-
-Thanks to this repo: https://github.com/fsalomon/nespresso-expert-ble and also this nice medium post https://medium.com/@urish/reverse-engineering-a-bluetooth-lightbulb-56580fcb7546 that basically helped me to understand how I need to sniff the packets.
-
-Sniffing
-first I have installed the Nespresso app on my mobile and I connected to the machine and used the application. Then, using the post I mentioned above, I sniffed the packets and opened them in the Wireshark to analyze them.
-
-Authentication
-I notice that everytime on the app we start communicating with the machine (brew or monitor or just oppening machine tab) it starts the conversation with a packet that has "8" at the start of its value and has 16 characters (mine was 85c55bc324a4170b) and it is writting on the 4th characteristic of the service 06aa1910f22a11e39daa0002a5d5c51b. note: only one mobile can connect to the expert machine and everytime that new mobile connects (which needs the device reset) the authentication packet will change.
-
-I have used noble library for ble communication. I mention some hints ;) Authentication will be done by writing to 4th characteristic of the first service Buffer.from("85c55bc324a4170b", "hex"). after writing when you read the 5th characteristic, the data should be "2" which means authenticaton was successful.
-
-Communication
-I don't know why, and dont ask me please but before sending the brew command you need to write this Buffer.from("01100800000200c8000000", "hex") on the 4th charac of the second service ("06aa1920f22a11e39daa0002a5d5c51b") and then inside the callback, you write this Buffer.from("03050704000000000101", "hex") which is low temp espresso. Now you machine should start brewing... yayyyy
-
-below I leave all of my notes in case it can be useful
-
-Brewing Types
-Here are my observations:
-
-0305070400000000 00 00 medium ristretto
-0305070400000000 01 01 low espresso
-0305070400000000 02 02 high lungo
-0305070400000000 01 04 low hot water
-0305070400000000 01 05 low americano
-0305070400000000 01 07 low probably cleaning mode (all lights turning on together)
-03060102 would stop the brewing (not always)
-
-Machine Alarms (Errors)
-On the second service, on 0th charac read normally is like 0:64 1:9 2:13 3:64 4:128 5:0 6:255 7:255.
-
-0: 64 is ok, 65: no water
-1: 64 with 132 is brewing or busy , 64 with 2 ready , 64 with 66/67/7x :full disposal or no disposal on second service, on 4th charac read normally is like: 0:129 1:16 2:1 3:32 4:0 5:0 6:0 7:0 8:0 9:0 10:0 11:0 12:0 13:0 14:0 15:0 16:0 17:0 18:0 19:0
-For understanding slide error, read should be done after command of brew
-
-1: 195 slider error, 129 ok, 131 busy brewing
-*/
-/*
-TODO'S:
-* Implement onan ESP32 Wroom
-* Add a hardware button
-* Add status on the machine, and potentially a display
-*/
-#define CONFIG_BLE_SMP_ENABLE 1
 #include <string.h>
 #define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 #include "esp_log.h"
