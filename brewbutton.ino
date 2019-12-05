@@ -23,6 +23,9 @@
 #include "BLEDevice.h"
 //#include "BLEScan.h"
 
+char cmd[128];    // UGLY hack, which re-uses a dedicated buffer
+/*
+This code is not used...
 // Water temperature
 #define TEMP_LOW 	"01"
 #define TEMP_MEDIUM	"00"
@@ -35,9 +38,8 @@
 #define AMERICANO	"04"
 #define HOTWATER	"05"
 #define RECIPE		"07"
-char cmd[128];    // UGLY hack, which re-uses a dedicated buffer
 
-/*
+
 #define uint_16   unsigned int
 unit_16 adjust_range(uint_16 x, uint_16 y, uint_16 z) 
 {
@@ -94,7 +96,6 @@ char *brew_cmd(char *vol, char *temp )
 
 static BLEUUID deviceServiceUUID( "06aa1910-f22a-11e3-9daa-0002a5d5c51b" );
 
-//static BLEUUID serviceUUID( "06aa1910-f22a-11e3-9daa-0002a5d5c51b" );
 static BLEUUID authServiceUUID( "06aa1910-f22a-11e3-9daa-0002a5d5c51b" );
 static BLEUUID cmdStatusServiceUUID( "06aa1920-f22a-11e3-9daa-0002a5d5c51b" );
 
@@ -112,9 +113,6 @@ static BLERemoteCharacteristic* pRemoteCharacteristicStatus;
 static String nespressoDeviceAuth = "879608e27cb1f96e"; // replace with your auth (from sniffer)
 
 //static String nespressoDeviceId[] = "D0:09:E2:58:54:B8"; // replace with your device id
-// Verify it simply with e.g. RENESAS GATT BROWSER, and write auth and then CMD
-
-
 
 static boolean doConnect = false;
 static boolean connected = false;
