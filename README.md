@@ -43,14 +43,14 @@ RETRIEVE AUTH-KEY
 
 In order to start this, you need to retrieve the AUTH-KEY. For this, I find this a fairly simple step-by-step instruction.
 
-* Using Samsung Galaxy Note 4
+* Using Android (I used Samsung Galaxy Note 4)
 * Go to developer options in settings, enable BLE HCI snoop
 * Start the Nespresso App (it should already be registered)
 * Stop BLE HCI snoop.
-* Connect the mobile to USB-PC, snoop file can be found here: \\Galaxy Note4\Phone\Android\data
+* Connect the mobile to USB-PC, and copy the file (On Samsung, the snoop is here: \\Galaxy Note4\Phone\Android\data\btsnoop_hci.log)
 * Install wireshark (wireshark.org)
 * Load the file in wire-shark
-* Look for AUTH-key Write Request to 0x0014 (Service 06aa3a41-f22a-11e3-9daa-0002a5d5c51b)
+* Look for Write Request to 0x0014 (Service 06aa3a41-f22a-11e3-9daa-0002a5d5c51b), the data part is the AUTH-key
 * Extract the AUTH-KEY (8bytes), mine is "879608e27cb1f96e"
 
 TEST AUTH-KEY
@@ -67,14 +67,12 @@ TEST AUTH-KEY
 PROTOCOL ANALYSIS
 ==================
 There exist some already done reverse engineering. I have tried to gather what was missing, in order to build what I wanted.
+I used Wireshark and GATTBrowser from Renesas, both where quite handy. And you could also analyze status, while brewing manually.
 
 RECIPE BREW
 -----------
 To brew a recipe coffee, allows you to specify the amount of coffee, the amount of water, and how hot the water should be.
 This comes as two separate write requests to the same service 06aa3a42-f22a-11e3-9daa-0002a5d5c51b (0x0024)
-
-#1 - Prepare Command : 
-
 
 ```
 In investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C)
@@ -101,13 +99,11 @@ What I noticed was that when water ran out, "water engaged" was still active, as
 ```
 
 
-
-
 STATUS
 ------
 
 ```
-In investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C)
+I investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C)
  +------+-----------+------------------+
  | Byte |    Bit    | Description      |
  +------+-----------+------------------+
