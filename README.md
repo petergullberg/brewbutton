@@ -13,13 +13,12 @@ HOW TO START
 HW and environment setup
 ------------
 
-The brew button is based on a simple ESP32 example, where I only added a debounced PIN, and  stuff needed to program the nespresso machine.
-* NodeMCU ESP-32s(v1.1) with Bluetooth Low Energy support
-* I used Arduino IDE 1.8.10
-* ESP32 BLE Arduino v1.0.1
+The brew button is based on a simple ESP32 example, where I only added a debounced PIN, and  stuff needed to program the nespresso machine. There might be alternatives here, but I put it here as a reference.
+* Arduino IDE 1.8.10 
+* NodeMCU ESP-32s(v1.1) with Bluetooth Low Energy support. https://hitechchain.se/iot/esp32-wemos-mini-d1-wifi-bluetooth
+* ESP32 BLE Arduino v1.0.1 library
 * GPIO2 <= with INTERNAL PULL_UP - hook up a button to ground..
 * To setup the ESP32 environment in Arduino IDE, I followed this one: https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
-
 
 
 Code Changes from default
