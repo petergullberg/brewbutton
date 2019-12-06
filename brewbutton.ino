@@ -275,7 +275,7 @@ const int ledPin = 13;      // the number of the LED pin
 // Variables will change:
 int ledState = HIGH;         // the current state of the output pin
 int buttonState;             // the current reading from the input pin
-int lastButtonState = LOW;   // the previous reading from the input pin
+int lastButtonState = HIGH;   // the previous reading from the input pin, we assume high = not engaged.
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
@@ -290,6 +290,7 @@ void initButton( void )
   buttonState = LOW;    // Initalize button state
   // set initial LED state
   digitalWrite(ledPin, ledState);
+  detectPress();    // Just to make sure we reset any detected state when starting
 }
 
 // This returns true once if it detects a keypress
@@ -385,8 +386,8 @@ void loop() {
       // Time to brew!
       Serial.println("===================");
       Serial.println("Keypress detected: ");
-      uint8_t perfectRecipe[] = {0x01,0x10,0x08,0x00,0x00,0x01,0x00,0x82,0x00,0x00,0x00};
-      uint8_t perfectRecipeBrew[] = { 0x03, 0x05, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x01, 0x07 };
+      uint8_t perfectRecipe[] =     { 0x01, 0x10, 0x08, 0x00, 0x00, 0x01, 0x00, 0x82, 0x00, 0x00, 0x00};
+      uint8_t perfectRecipeBrew[] = { 0x03, 0x05, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07 };
       uint8_t auth[] = { 0x87, 0x96, 0x08, 0xe2, 0x7c, 0xb1,0xf9,0x6e};
       
       Serial.println("Writing to characteristics\n");
