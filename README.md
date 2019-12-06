@@ -48,8 +48,8 @@ In order to start this, you need to retrieve the AUTH-KEY. For this, I find this
 
 TEST AUTH-KEY
 -------------
-* Downloaded on  GATTBrowser (Renesas)
-* Find and connect to device
+* Downloaded the GATTBrowser from Renesas, you have it on both iPhone/Android
+* Find and connect to the nespresso device
 * Find auth service characteristics 06aa3a41-f22a-11e3-9daa-0002a5d5c51b
 * Write AUTH-KEY to this register
 * Find service characteristics 06aa3a42-f22a-11e3-9daa-0002a5d5c51b
@@ -71,10 +71,12 @@ Standard brews, are those that are on the front dial. PLease note that the Ameri
 0305070400000000 02 02 high lungo
 0305070400000000 01 04 low hot water
 0305070400000000 01 05 low americano
+0305070400000000 01 07 Recipe brew
 03060102 would stop the brewing (not always)
 ,,,
+As you can see, the last byte is the type of brew, and the second last is the temperature
 
-RECIPE BREW
+RECIPE BREW (07)
 -----------
 Recipe brew, is where you can select how much coffe you want, the amount of water, and how hot the water should be.
 This comes as two separate write requests to the "command service" 06aa3a42-f22a-11e3-9daa-0002a5d5c51b (0x0024)
