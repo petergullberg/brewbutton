@@ -41,7 +41,7 @@ In order to start this, you need to retrieve the AUTH-KEY. For this, I find this
 * Start the Nespresso App (it should already be registered)
 * Stop BLE HCI snoop.
 * Connect the mobile to USB-PC, and copy the file (On Samsung, the snoop is here: \\Galaxy Note4\Phone\Android\data\btsnoop_hci.log)
-* Install wireshark (wireshark.org)
+* Install wireshark (wireshark.org), learn a little about it: https://medium.com/@urish/reverse-engineering-a-bluetooth-lightbulb-56580fcb7546
 * Load the file in wire-shark
 * Look for Write Request to 0x0014 (Service 06aa3a41-f22a-11e3-9daa-0002a5d5c51b), the data part is the AUTH-key
 * Extract the AUTH-KEY (8bytes), mine is "879608e27cb1f96e"
@@ -62,29 +62,41 @@ PROTOCOL ANALYSIS
 There exist some already done reverse engineering. I have tried to gather what was missing, in order to build what I wanted.
 I used Wireshark and GATTBrowser from Renesas, both where quite handy. And you could also analyze status, while brewing manually.
 
+STANDARD BREWS
+--------------
+Standard brews, are those that are on the front dial. PLease note that the Americano contains way too much water, and is not a good choice.
+,,,
+0305070400000000 00 00 medium ristretto
+0305070400000000 01 01 low espresso
+0305070400000000 02 02 high lungo
+0305070400000000 01 04 low hot water
+0305070400000000 01 05 low americano
+03060102 would stop the brewing (not always)
+,,,
+
 RECIPE BREW
 -----------
-To brew a recipe coffee, allows you to specify the amount of coffee, the amount of water, and how hot the water should be.
-This comes as two separate write requests to the same service 06aa3a42-f22a-11e3-9daa-0002a5d5c51b (0x0024)
+Recipe brew, is where you can select how much coffe you want, the amount of water, and how hot the water should be.
+This comes as two separate write requests to the "command service" 06aa3a42-f22a-11e3-9daa-0002a5d5c51b (0x0024)
 
 ```
-In investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C)
- 
+To make a recipe brew, you send two separate commands to the "command service" characteristic 06aa3a42-f22a-11e3-9daa-0002a5d5c51b
+
  Prepare command:
  +---------------------------------------------+
  |  01 10 08 00 00 {01 00 61} {02 00 24}       |
  +---------------------------------------------+
- | - 01 = coffe, 00 61 = 97 ml                 |
- | - 02 = water, 00 24 = 37 ml                 |
+ | - 01 = coffe, 0x0061 = 97 ml                |
+ | - 02 = water, 0x0024 = 37 ml                |
  | - It's possible to reverse these two,       |
  |   if you want water first.                  |
  +---------------------------------------------+
 
 Brew command:
  +---------------------------------------------+
- |  03 05 07 04 00 00 00 00 {00} {07}          |
+ |  03 05 07 04 00 00 00 00 {02} {07}          |
  +---------------------------------------------+
- | - 00 = Hot                                  |
+ | - 02 = Hot, 01 = x, 00 = x                  |
  | - 07 = Recipe                               |
  +---------------------------------------------+
 
@@ -93,8 +105,7 @@ What I noticed was that when water ran out, "water engaged" was still active, as
 
 ```
 
-Flow when the App brews coffee
-------------------------------
+**Flow when the App brews coffee**
 
 ```
 Prepare command    ------->   Write char (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C) 10B
@@ -104,24 +115,28 @@ Read Char          <-------   Read (0x0026) 20B
 Read STATUS        <-------   Read 0x001C 8B
 ```
 
-
-
 STATUS
 ------
 
 ```
 I investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C)
+It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
+
  +------+-----------+------------------+
  | Byte |    Bit    | Description      |
  +------+-----------+------------------+
- |  B0  | xxxx xxx1 | Empty water      |
+ |  B0  | xxxx xxx1 | Water is empty   |
  +------+-----------+------------------+
  |  B1  | 1xxx xxxx | Capsule engaged  |
  |      | xxxx x1xx | Water engaged    |
- |      | xxxx xx1x | Idle             |
+ |      | xxxx xx1x | Idle/ok          |
+ +------+-----------+------------------+
+ |  Bn  | ???? ???? | tbc              |
  +------+-----------+------------------+
 
-What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume
+What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume.
+While brewing coffee, both capsule engage and water engaged are active.
+
 ```
 Examples:
 - Idle:	       "40 02 01 E0 40 00 FF FF"
@@ -131,9 +146,11 @@ Examples:
 - Bucket full: tbc 
 
 
-Other status - tbd
+Second status - tbd
 ------------------
-0x26 (R)
+Not really sure what this is, yet...
+But it appears that the app reads this after writing the recipe brew.
+0x0026 (R)
 
 What I noticed after performing prepare recipe reading the value was
  - 811001200000.... (20B)
