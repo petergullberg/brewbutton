@@ -1,8 +1,8 @@
 brewbutton
 ============
-The nespresso expert is a piece of shit and the app even more. So this project aims to replace the mobile app, and allow you to brew my own stuff. The only reason I started banging my head on this BLE protocol, was that the default "lungo" on the front dial added too much water, making it undrinkable, and to overcome the crappy App and the Crappy default settings on the machine.
+The nespresso expert is a piece of shit and the app even more. So this project aims to replace the mobile app, and allow you to brew your own stuff. The only reason I started banging my head on this BLE protocol, was that the default "lungo" on the front dial added too much water, making it undrinkable, and to overcome the crappy App and the Crappy default settings on the machine.
 
-The brewbutton, is a simple piece of code that connects to an nespresso machine, and when triggered on the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew. 
+The brewbutton, is a simple piece of code that connects to an nespresso machine, and when triggered by the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew. 
 My idea is to have a small brew button that can brew my morning coffe the way I want it.
 
 I have contributed a little to the reverse engineered of the protocol, see below. 
@@ -38,9 +38,10 @@ In order to start this, you need to retrieve the AUTH-KEY. For this, I find this
 
 * Using Android (I used Samsung Galaxy Note 4)
 * Go to developer options in settings, enable BLE HCI snoop
-* Start the Nespresso App (it should already be registered)
+* Start the Nespresso App (you need to have registered this and connected to your machine already)
+* Brew a cup of coffee
 * Stop BLE HCI snoop.
-* Connect the mobile to USB-PC, and copy the file (On Samsung, the snoop is here: \\Galaxy Note4\Phone\Android\data\btsnoop_hci.log)
+* Connect the mobile to USB/PC and copy/email the file (On Samsung, the snoop is here: \\Galaxy Note4\Phone\Android\data\btsnoop_hci.log)
 * Install wireshark (wireshark.org), learn a little about it: https://medium.com/@urish/reverse-engineering-a-bluetooth-lightbulb-56580fcb7546
 * Load the file in wire-shark
 * Look for Write Request to 0x0014 (Service 06aa3a41-f22a-11e3-9daa-0002a5d5c51b), the data part is the AUTH-key
