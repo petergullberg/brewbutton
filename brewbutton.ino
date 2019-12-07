@@ -13,15 +13,25 @@
  * https://gist.github.com/kolontsov/352f51859d15ee4e66368122bbf4d7c5
  * https://github.com/nkolban/ESP32_BLE_Arduino
  * 
+ * Also added an I2C LCD for debugging/information purposes
  */
 
 
 #define CONFIG_BLE_SMP_ENABLE 1
 #include <string.h>
+#include <LiquidCrystal_I2C.h>
 #include "esp_log.h"
-
 #include "BLEDevice.h"
-//#include "BLEScan.h"
+
+
+// set the LCD number of columns and rows
+int lcdColumns = 16;
+int lcdRows = 2;
+
+// set LCD address, number of columns and rows
+// if you don't know your display address, run an I2C scanner sketch
+LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);  
+
 
 char cmd[128];    // UGLY hack, which re-uses a dedicated buffer
 /*
@@ -140,6 +150,8 @@ class MyClientCallback : public BLEClientCallbacks {
   void onDisconnect(BLEClient* pclient) {
     connected = false;
     Serial.println("onDisconnect");
+    lcd.clear();
+    lcd.print("Disconnected");
   }
 };
 
@@ -234,7 +246,7 @@ bool connectToServer() {
      if (pRemoteCharacteristicStatus->canRead()) {
         Serial.println("The characteristic value can be read");
         // Read characteristics, is it will force bonding - security
-        pRemoteCharacteristicStatus->readValue();
+        //pRemoteCharacteristicStatus->readValue();
 
      }
  
@@ -330,6 +342,14 @@ int detectPress(void)
 }
 
 void setup() {
+
+  lcd.init();
+  // turn on LCD backlight                      
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  // print message
+  lcd.print("Starting!");
+
   Serial.begin(115200);
   Serial.println("Starting Arduino BLE Client application...");
   Serial.println("NESPRESSO BLE STUFF...");
@@ -353,6 +373,19 @@ void setup() {
   
 } // End of setup.
 
+// Sucker
+void byteToAsciiHex( char *stringbuf, const char *buf, int nmbr_bytes)
+{
+  byte nibble;
+  for (int cnt = 0; cnt < nmbr_bytes; cnt++ ) {
+    nibble = (buf[cnt] >> 4) & 0x0F;
+    stringbuf[cnt*2] = "0123456789abdef"[nibble];
+    nibble = buf[cnt] & 0x0F;
+    stringbuf[(cnt*2)+1] = "0123456789abdef"[nibble];
+  }
+  stringbuf[nmbr_bytes*2] = 0x00;
+}
+
 int cnt = 0;
 // This is the Arduino main loop function.
 void loop() {
@@ -362,7 +395,17 @@ void loop() {
   // connected we set the connected flag to be true.
   if (doConnect == true) {
     if (connectToServer()) {
+      uint8_t auth[] = { 0x87, 0x96, 0x08, 0xe2, 0x7c, 0xb1,0xf9,0x6e};
+
       Serial.println("We are now connected to the BLE Server.");
+      lcd.setCursor(0,1);
+      lcd.print("Connected!");
+      Serial.println("Writing to AUTH\n");
+      delay(1000);    // Give the connection some time
+      pRemoteCharacteristicAuth->writeValue( auth, sizeof(auth), true );
+      delay(2000);
+      
+      
     } else {
       Serial.println("We have failed to connect to the server; there is nothin more we will do.");
     }
@@ -374,8 +417,36 @@ void loop() {
   if (connected) {
     
     if ( 0 == cnt ) {    // Just to slow down serial printing
+      char val_buf[30];
       String newValue = "Time since boot: " + String(millis()/1000);
-      Serial.println("Setting new characteristic value to \"" + newValue + "\"");
+
+      std::string value = pRemoteCharacteristicStatus->readValue();
+      Serial.print("The characteristic value was: ");
+      Serial.print("Length: ");
+      Serial.println(value.length());
+      byteToAsciiHex(val_buf, value.c_str(), value.length());
+      lcd.cle ar();
+      lcd.setCursor(0, 0);
+      // print message
+      lcd.print(val_buf);
+    
+      lcd.setCursor(0,1);
+      lcd.print("                ");
+      lcd.setCursor(0,1);
+      Serial.println(val_buf);
+      strcpy(val_buf, "S:");
+      if ( value[0] & 0x01 ) // Water empty
+        strcat(val_buf, "no water ");
+ 
+      if ( 0x84 == (value[1] & 0x84) ) // capsule engage
+        strcat(val_buf, "coffe! ");
+      if ( 0x04 == (value[1] & 0x84) )
+        strcat(val_buf, "water ");
+      if ( 0x02 == value[1] )
+        strcat(val_buf, "idle");
+      Serial.println(val_buf);
+      lcd.print(val_buf);
+      
     }
     cnt++;
     if ( cnt > 100 ) {
@@ -386,13 +457,15 @@ void loop() {
       // Time to brew!
       Serial.println("===================");
       Serial.println("Keypress detected: ");
-      uint8_t perfectRecipe[] =     { 0x01, 0x10, 0x08, 0x00, 0x00, 0x01, 0x00, 0x82, 0x00, 0x00, 0x00};
-      uint8_t perfectRecipeBrew[] = { 0x03, 0x05, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07 };
-      uint8_t auth[] = { 0x87, 0x96, 0x08, 0xe2, 0x7c, 0xb1,0xf9,0x6e};
+      // print message
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Brewing coffee");
       
-      Serial.println("Writing to characteristics\n");
-      pRemoteCharacteristicAuth->writeValue( auth, sizeof(auth), true );
-      delay(1000);
+      uint8_t perfectRecipe[] =     { 0x01, 0x10, 0x08, 0x00, 0x00, 0x01, 0x00, 0x82, 0x00, 0x00,0x00};
+      uint8_t perfectRecipeBrew[] = { 0x03, 0x05, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07 };
+
+      
 
       pRemoteCharacteristicCommand->writeValue( perfectRecipe, sizeof(perfectRecipe), true );
       delay(100);
@@ -408,6 +481,7 @@ void loop() {
 
   }else if(doScan){
     BLEDevice::getScan()->start(0);  // this is just eample to start scan after disconnect, most likely there is better way to do it in arduino
+    
   }
   
   delay(100); //  a second between loops.
