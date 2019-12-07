@@ -131,11 +131,13 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |  B0  | xxxx xxx1 | Water is empty          |
  +------+-----------+-------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged         |
+ |      | x1xx xxxx | Door open / Sensor full | 
+ |      |           | 0xDx when sensor trips  |
+ |      | xxxx 1xxx | Sleeping                |
  |      | xxxx x1xx | Water engaged           |
  |      | xxxx xx1x | Awake, ok               |
- |      | x1xx xxxx | Door open / Sensor full |
- |      | xxxx 1xxx | Sleeping                |
- |      | xxxx xxx1 | Water temperature low   |
+ |      | xxxx xxx1 | Water temperature low / |
+ |      |           | set while sleeping      |
  +------+-----------+-------------------------+
  |  B2  | ???? ???? | tbc                     |
  |      |           | 80                      |
