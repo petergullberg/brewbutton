@@ -17,6 +17,7 @@ The brew button is based on a simple ESP32 example, where I only added a debounc
 * Arduino IDE 1.8.10 
 * NodeMCU ESP-32s(v1.1) with Bluetooth Low Energy support. https://hitechchain.se/iot/esp32-wemos-mini-d1-wifi-bluetooth
 * ESP32 BLE Arduino v1.0.1 library
+* Install I2C LCD - http://www.esp32learning.com/code/esp32-and-i2c-lcd-example.php
 * GPIO2 <= with INTERNAL PULL_UP - hook up a button to ground..
 * To setup the ESP32 environment in Arduino IDE, I followed this one: https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
 
@@ -28,6 +29,7 @@ From the original setup I had to make a few changes
 * I hardcoded the #define CONFIG_BLE_SMP_ENABLE, in BLEDEvice.cpp, and BLEClient.cpp to ensure security is enabled (to be honest I haven't spent enough time, understanding how to makefiles works in Arduino
 * FIX a bug in BleRemoteService.cpp on line 175: uint16_t count = 1;
 * Add the line: BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT); in onConnect
+* FIX a bug in BLERemoteCharacteristic.h, https://github.com/nkolban/esp32-snippets/blob/91e1571dd5bd433e107f92e1588780ee22fed42e/cpp_utils/BLERemoteCharacteristic.h#L77
 
 On top of this, I also discvered a bug on my windows installation, that prevented me from compiling, but that was solved by a simple mklink....
 
