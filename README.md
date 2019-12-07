@@ -125,17 +125,27 @@ STATUS
 I investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C)
 It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
 
- +------+-----------+------------------+
- | Byte |    Bit    | Description      |
- +------+-----------+------------------+
- |  B0  | xxxx xxx1 | Water is empty   |
- +------+-----------+------------------+
- |  B1  | 1xxx xxxx | Capsule engaged  |
- |      | xxxx x1xx | Water engaged    |
- |      | xxxx xx1x | Idle/ok          |
- +------+-----------+------------------+
- |  Bn  | ???? ???? | tbc              |
- +------+-----------+------------------+
+ +------+-----------+-------------------------+
+ | Byte |    Bit    | Description             |
+ +------+-----------+-------------------------+
+ |  B0  | xxxx xxx1 | Water is empty          |
+ +------+-----------+-------------------------+
+ |  B1  | 1xxx xxxx | Capsule engaged         |
+ |      | xxxx x1xx | Water engaged           |
+ |      | xxxx xx1x | Awake, ok               |
+ |      | x1xx xxxx | Door open / Sensor full |
+ |      | xxxx 1xxx | Sleeping                |
+ |      | xxxx xxx1 | Water temperature low   |
+ +------+-----------+-------------------------+
+ |  B2  | ???? ???? | tbc                     |
+ |      |           | 80                      |
+ +------+-----------+-------------------------+
+ |  B3  | ???? ???? | tbc                     |
+ |      |           | 05, seen 06             |
+ +------+-----------+-------------------------+
+ |  Bn  | ???? ???? | tbc                     |
+ |      |           |                         |
+ +------+-----------+-------------------------+
 
 What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume.
 While brewing coffee, both capsule engage and water engaged are active.
