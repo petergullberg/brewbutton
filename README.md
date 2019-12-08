@@ -138,6 +138,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      | xxxx x1xx | Water engaged                                     |
  |      | xxxx xx1x | Awake, ok                                         |
  |      | xxxx xxx1 | Water temperature low / set while sleeping        |
+ |      | 1101 xxxx | Sensor tripped (not bit pattern)                  |
  +------+-----------+---------------------------------------------------+
  |  B2  | ???? ???? | tbc                                               |
  |      |           | Typical value 0x80                                |
@@ -151,7 +152,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |  B5  | ???? ???? | tbc                                               |
  |      |           |                                                   |
  +------+-----------+---------------------------------------------------+
- | B6B7 |   XX XX   | Appears to be last err                            |
+ | B6B7 |   XX XX   | Appears to be last err, and seem persistent       |
  |      |           | Values seen:                                      |
  |      |           | f9f4 - trying to brew with open door              |
  |      |           | ffff - ?                                          |
@@ -163,22 +164,25 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
 
 What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume.
 While brewing coffee, both capsule engage and water engaged are active.
+Quirks found:
+* Sometimes when device is reobooted status is 40 00
+* If tray sensor trips the value is 40 Dx
+* After sending the brew command, you may get warming, water engaged and them coffee brew, seems to be some latency
 
-```
 Examples:
 - Idle:	       "40 02 01 E0 40 00 FF FF"
 - Coffe:  	    "40 84 01 E0 40 00 FF FF"
 - Water:	      "40 04 01 E0 40 00 FF FF"
 - Empty Water: "41 84 01 E0 40 00 FF FF" (capsule still locked in)
 - Tray full: tbc 
+```
 
 Slider status
 -------------
 The capsule slider status is on characteristic 06aa3a22-f22a-11e3-9daa-0002a5d5c51b
 
 ```
-
-The slider status
+Slider status
  +------+-----------+---------------------------------------------------+
  | Byte |    Value  | Description                                       |
  +------+-----------+---------------------------------------------------+
@@ -193,7 +197,7 @@ Not really sure what this is, yet...
 But it appears that the app reads this after writing the recipe brew.
 0x0026 (R)
 
-What I noticed after performing prepare recipe reading the value was
+What I noticed after performing prepare recipe in the Nespresso App, reading the value was
  - 811001200000.... (20B)
  - and after brew command the value was:
  - 830501200000.... (20B)
@@ -220,4 +224,4 @@ Other protocol details I plan to investigate:
 - Would like to investigate the scheduling option
 - Can I program the dials?
 - Planning on reversing a little more (status 0x0026) and also try to understand time program
-- What other data can I capture (sleep, etc?)
+- What other data can I capture
