@@ -127,29 +127,39 @@ STATUS
 I investigated the status service (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C)
 It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
 
- +------+-----------+-------------------------+
- | Byte |    Bit    | Description             |
- +------+-----------+-------------------------+
- |  B0  | xxxx xxx1 | Water is empty          |
- +------+-----------+-------------------------+
- |  B1  | 1xxx xxxx | Capsule engaged         |
- |      | x1xx xxxx | Door open / Sensor full | 
- |      |           | 0xDx when sensor trips  |
- |      | xxxx 1xxx | Sleeping                |
- |      | xxxx x1xx | Water engaged           |
- |      | xxxx xx1x | Awake, ok               |
- |      | xxxx xxx1 | Water temperature low / |
- |      |           | set while sleeping      |
- +------+-----------+-------------------------+
- |  B2  | ???? ???? | tbc                     |
- |      |           | 80                      |
- +------+-----------+-------------------------+
- |  B3  | ???? ???? | tbc                     |
- |      |           | 05, seen 06             |
- +------+-----------+-------------------------+
- |  Bn  | ???? ???? | tbc                     |
- |      |           |                         |
- +------+-----------+-------------------------+
+ +------+-----------+---------------------------------------------------+
+ | Byte |    Bit    | Description                                       |
+ +------+-----------+---------------------------------------------------+
+ |  B0  | xxxx xxx1 | Water is empty                                    |
+ +------+-----------+---------------------------------------------------+
+ |  B1  | 1xxx xxxx | Capsule engaged                                   |
+ |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips| 
+ |      | xxxx 1xxx | Sleeping                                          |
+ |      | xxxx x1xx | Water engaged                                     |
+ |      | xxxx xx1x | Awake, ok                                         |
+ |      | xxxx xxx1 | Water temperature low / set while sleeping        |
+ +------+-----------+---------------------------------------------------+
+ |  B2  | ???? ???? | tbc                                               |
+ |      |           | Typical value 0x80                                |
+ +------+-----------+---------------------------------------------------+
+ |  B3  | ???? ???? | tbc                                               |
+ |      |           | 05h, seen 06h                                     |
+ +------+-----------+---------------------------------------------------+
+ |  B4  | ???? ???? | tbc                                               |
+ |      |           | Typical value 0x80                                |
+ +------+-----------+---------------------------------------------------+
+ |  B5  | ???? ???? | tbc                                               |
+ |      |           |                                                   |
+ +------+-----------+---------------------------------------------------+
+ | B6B7 |   XX XX   | Appears to be last err                            |
+ |      |           | Values seen:                                      |
+ |      |           | f9f4 - trying to brew with open door              |
+ |      |           | ffff - ?                                          |
+ |      |           | ee-- - Trying to send a brew command before the   |
+ |      |           |        lid had been cycled                        |
+ |      |           | f0f5 - Brew command from BLE after a normal brew  |
+ |      |           |        from the machine button and no slidecycling|
+ +------+-----------+---------------------------------------------------+
 
 What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume.
 While brewing coffee, both capsule engage and water engaged are active.
@@ -160,8 +170,19 @@ Examples:
 - Coffe:  	    "40 84 01 E0 40 00 FF FF"
 - Water:	      "40 04 01 E0 40 00 FF FF"
 - Empty Water: "41 84 01 E0 40 00 FF FF" (capsule still locked in)
-- Bucket full: tbc 
+- Tray full: tbc 
 
+Slider status
+-------------
+The capsule slider status is on characteristic 06aa3a22-f22a-11e3-9daa-0002a5d5c51b
+
+The slider status
+ +------+-----------+---------------------------------------------------+
+ | Byte |    Value  | Description                                       |
+ +------+-----------+---------------------------------------------------+
+ |  B0  |    0x00   | Slider is open                                    |
+ |      |    0x02   | Slider is closed                                  |
+ +------+-----------+---------------------------------------------------+
 
 Second status - tbd
 ------------------
