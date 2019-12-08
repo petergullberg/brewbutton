@@ -68,7 +68,7 @@ I used Wireshark and GATTBrowser from Renesas, both where quite handy. And you c
 STANDARD BREWS
 --------------
 Standard brews, are those that are on the front dial. PLease note that the Americano contains way too much water, and is not a good choice.
-,,,
+```
 0305070400000000 00 00 medium ristretto
 0305070400000000 01 01 low espresso
 0305070400000000 02 02 high lungo
@@ -76,7 +76,7 @@ Standard brews, are those that are on the front dial. PLease note that the Ameri
 0305070400000000 01 05 low americano
 0305070400000000 01 07 Recipe brew
 03060102 would stop the brewing (not always)
-,,,
+```
 As you can see, the last byte is the type of brew, and the second last is the temperature
 
 RECIPE BREW (07)
@@ -176,7 +176,7 @@ Slider status
 -------------
 The capsule slider status is on characteristic 06aa3a22-f22a-11e3-9daa-0002a5d5c51b
 
-,,,
+```
 
 The slider status
  +------+-----------+---------------------------------------------------+
@@ -185,7 +185,7 @@ The slider status
  |  B0  |    0x00   | Slider is open                                    |
  |      |    0x02   | Slider is closed                                  |
  +------+-----------+---------------------------------------------------+
-,,,
+```
 
 Second status - tbd
 ------------------
