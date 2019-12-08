@@ -176,6 +176,8 @@ Slider status
 -------------
 The capsule slider status is on characteristic 06aa3a22-f22a-11e3-9daa-0002a5d5c51b
 
+,,,
+
 The slider status
  +------+-----------+---------------------------------------------------+
  | Byte |    Value  | Description                                       |
@@ -183,6 +185,7 @@ The slider status
  |  B0  |    0x00   | Slider is open                                    |
  |      |    0x02   | Slider is closed                                  |
  +------+-----------+---------------------------------------------------+
+,,,
 
 Second status - tbd
 ------------------
