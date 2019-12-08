@@ -134,11 +134,11 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged                                   |
  |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips| 
+ |      | xxx1 xxxx | Sensor tripped during brewing??                   | 
  |      | xxxx 1xxx | Sleeping                                          |
  |      | xxxx x1xx | Water engaged                                     |
  |      | xxxx xx1x | Awake, ok                                         |
  |      | xxxx xxx1 | Water temperature low / set while sleeping        |
- |      | 1101 xxxx | Sensor tripped (not bit pattern)                  |
  +------+-----------+---------------------------------------------------+
  |  B2  | ???? ???? | tbc                                               |
  |      |           | Typical value 0x80                                |
@@ -165,16 +165,16 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
 What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume.
 While brewing coffee, both capsule engage and water engaged are active.
 Quirks found:
-* Sometimes when device is reobooted status is 40 00
-* If tray sensor trips the value is 40 Dx
-* After sending the brew command, you may get warming, water engaged and them coffee brew, seems to be some latency
+* Sometimes when device is reobooted status is 40 00 ..
+* If tray sensor trips during brewing the value becomes 40 Dx
+* After sending the brew command, you may get warming, water engaged and them coffee brew, seems to be some latency in status
 
 Examples:
 - Idle:	       "40 02 01 E0 40 00 FF FF"
 - Coffe:  	    "40 84 01 E0 40 00 FF FF"
 - Water:	      "40 04 01 E0 40 00 FF FF"
 - Empty Water: "41 84 01 E0 40 00 FF FF" (capsule still locked in)
-- Tray full: tbc 
+- Tray full:   "40 4x 
 ```
 
 Slider status
