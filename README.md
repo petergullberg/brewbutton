@@ -6,6 +6,7 @@ The brewbutton, is a simple piece of code that connects to an nespresso machine,
 My idea is to have a small brew button that can brew my morning coffe the way I want it.
 
 I have contributed a little to the reverse engineered of the protocol, see below. 
+Part of this insights was based on: https://gist.github.com/farminf/94f681eaca2760212f457ac59da99f23
 
 HOW TO START
 ============
