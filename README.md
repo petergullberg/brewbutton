@@ -68,14 +68,14 @@ I used Wireshark and GATTBrowser from Renesas, both where quite handy. And you c
 
 STANDARD BREWS
 --------------
-Standard brews, are those that are on the front dial. PLease note that the Americano contains way too much water, and is not a good choice.
+Standard brews, are those that are on the front dial. Please note that the Americano contains way too much water, and is not a good choice.
 ```
 0305070400000000 00 00 medium ristretto
 0305070400000000 01 01 low espresso
 0305070400000000 02 02 high lungo
 0305070400000000 01 04 low hot water
 0305070400000000 01 05 low americano
-0305070400000000 01 07 Recipe brew
+0305070400000000 01 07 Recipe brew      <= only throught BLE
 03060102 would stop the brewing (not always)
 ```
 As you can see, the last byte is the type of brew, and the second last is the temperature
@@ -171,9 +171,9 @@ Quirks found:
 * After sending the brew command, you may get warming, water engaged and them coffee brew, seems to be some latency in status
 
 Examples:
-- Idle:	       "40 02 01 E0 40 00 FF FF"
-- Coffe:  	    "40 84 01 E0 40 00 FF FF"
-- Water:	      "40 04 01 E0 40 00 FF FF"
+- Idle:       "40 02 01 E0 40 00 FF FF"
+- Coffee:      "40 84 01 E0 40 00 FF FF"
+- Water:       "40 04 01 E0 40 00 FF FF"
 - Empty Water: "41 84 01 E0 40 00 FF FF" (capsule still locked in)
 - Tray full:   "40 4x 
 ```
