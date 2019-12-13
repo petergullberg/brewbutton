@@ -53,13 +53,14 @@ In order to start this, you need to retrieve the AUTH-KEY. For this, I find this
 TEST AUTH-KEY
 -------------
 * Downloaded the GATTBrowser from Renesas, you have it on both iPhone/Android
+* Make sure your Nespresso app is not running, as the machine only accepts one connection
 * Find and connect to the nespresso device
 * Find auth service characteristics 06aa3a41-f22a-11e3-9daa-0002a5d5c51b
 * Write AUTH-KEY to this register
 * Find service characteristics 06aa3a42-f22a-11e3-9daa-0002a5d5c51b
 * Write 03050704000000000105
-* If you managed to do these steps above correctly  you should be brewing an Americano
-
+* If you managed to do these steps above correctly you should be brewing an Americano
+* Now you only need to enter the AUTH-KEY in your source code file compile and run
 
 PROTOCOL ANALYSIS
 ==================
@@ -153,8 +154,21 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |  B5  | ???? ???? | tbc                                               |
  |      |           |                                                   |
  +------+-----------+---------------------------------------------------+
- | B6B7 |   XX XX   | Appears to be last err, and seem persistent       |
- |      |           | Values seen:                                      |
+ | B6B7 |   XX XX   | Is the amount of time since last brew             |
+ |      |           | it's not clear the exact precision, since it      |
+ |      |           | appears to be slower as longer we wait            |
+ |      |           | but, we don't know yet, 5d000XXXX                 |
+ |      |           | Examples:                                         |
+ |      |           | 9e5a – (08:25 <= Time)                            | 
+ |      |           | 9897 - (08:30)                                    |
+ |      |           | 93e5 - (08:42)                                    |
+ |      |           | 8--- - (08:55)                                    |
+ |      |           | 8ea2 - (08:57)                                    |
+ |      |           | 8d33 - (09:08)                                    |
+ |      |           | 86a9 - (10:24)                                    |
+ |      |           | 853a - (10:37)                                    |
+ |      |           | 83da - (10:38)                                    |
+ |      |           |                                                   |
  |      |           | f9f4 - trying to brew with open door              |
  |      |           | ffff - ?                                          |
  |      |           | ee-- - Trying to send a brew command before the   |
