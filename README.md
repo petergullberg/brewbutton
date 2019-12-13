@@ -89,17 +89,17 @@ This comes as two separate write requests to the "command service" 06aa3a42-f22a
 ```
 To make a recipe brew, you send two separate commands to the "command service" characteristic 06aa3a42-f22a-11e3-9daa-0002a5d5c51b
 
- Prepare command:
+ Prepare command (0x0024):
  +---------------------------------------------+
  |  01 10 08 00 00 {01 00 61} {02 00 24}       |
  +---------------------------------------------+
- | - 01 = coffe, 0x0061 = 97 ml                |
- | - 02 = water, 0x0024 = 37 ml                |
+ | - {010061} 01=coffe, 0061h=97ml             |
+ | - {020024} 02=water, 0024h=37ml             |
  | - It's possible to reverse these two,       |
  |   if you want water first.                  |
  +---------------------------------------------+
 
-Brew command:
+Brew command (0x0024):
  +---------------------------------------------+
  |  03 05 07 04 00 00 00 00 {02} {07}          |
  +---------------------------------------------+
