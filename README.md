@@ -136,6 +136,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged                                   |
  |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips| 
+ |      |           | It also seeems to be indicator of descaling       |
  |      | xxx1 xxxx | Sensor tripped during brewing??                   | 
  |      | xxxx 1xxx | Sleeping                                          |
  |      | xxxx x1xx | Water engaged                                     |
@@ -150,31 +151,19 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  |  B4  | ???? ???? | tbc                                               |
  |      |           | Typical value 0x80                                |
+ |      |           | Have seen d0,80,40, and appears to change after   |
+ |      |           | errror, so it potentiall could be last error      |
  +------+-----------+---------------------------------------------------+
  |  B5  | ???? ???? | tbc                                               |
  |      |           |                                                   |
  +------+-----------+---------------------------------------------------+
- | B6B7 |   XX XX   | Is the amount of time since last brew             |
- |      |           | it's not clear the exact precision, since it      |
- |      |           | appears to be slower as longer we wait            |
- |      |           | but, we don't know yet, 5d000XXXX                 |
- |      |           | Examples:                                         |
- |      |           | 9e5a – (08:25 <= Time)                            | 
- |      |           | 9897 - (08:30)                                    |
- |      |           | 93e5 - (08:42)                                    |
- |      |           | 8--- - (08:55)                                    |
- |      |           | 8ea2 - (08:57)                                    |
- |      |           | 8d33 - (09:08)                                    |
- |      |           | 86a9 - (10:24)                                    |
- |      |           | 853a - (10:37)                                    |
- |      |           | 83da - (10:38)                                    |
- |      |           |                                                   |
- |      |           | f9f4 - trying to brew with open door              |
- |      |           | ffff - ?                                          |
- |      |           | ee-- - Trying to send a brew command before the   |
- |      |           |        lid had been cycled                        |
- |      |           | f0f5 - Brew command from BLE after a normal brew  |
- |      |           |        from the machine button and no slidecycling|
+ | B6B7 |   XX XX   | [2019-12-21] Updated                              |
+ |      |           | Appears to be a count-down that is used to        |
+ |      |           | signal when descaling it needed when it reaches   |
+ |      |           | 000h, probably starting from FFFFh                |
+ |      |           | When it reached 0000h, it set set B1.6            |
+ |      |           | Unclear what the values actually represent        |
+ |      |           | but they tend to go slower as longer we wait      |
  +------+-----------+---------------------------------------------------+
 
 What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume.
