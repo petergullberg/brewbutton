@@ -132,12 +132,14 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  | Byte |    Bit    | Description                                       |
  +------+-----------+---------------------------------------------------+
- |  B0  | xxxx xxx1 | Water is empty                                    |
+ |  B0  | 1xxx xxx1 | Aclways 1                                         |
+ |      | xxx1 xxx0 | Capsule mechanism jammed                          |
+ |      | xxxx xxx1 | Water is empty                                    |
  +------+-----------+---------------------------------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged                                   |
  |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips| 
  |      |           | It also seeems to be indicator of descaling       |
- |      | xxx1 xxxx | Sensor tripped during brewing??                   | 
+ |      | xxx1 xxxx | Tray sensor tripped during brewing?               | 
  |      | xxxx 1xxx | Sleeping                                          |
  |      | xxxx x1xx | Water engaged                                     |
  |      | xxxx xx1x | Awake, ok                                         |
