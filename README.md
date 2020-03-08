@@ -134,6 +134,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  |  B0  | x1xx xxxx | Always 1                                          |
  |      | xxx1 xxx0 | Capsule mechanism jammed                          |
+ |      | xxxx 1xxx | Descaled needed                                   |
  |      | xxxx xxx1 | Water is empty                                    |
  +------+-----------+---------------------------------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged                                   |
@@ -252,18 +253,13 @@ For example the for value i get:
 44 09 80 2D C0 00 00
 44 09 07 2D C0 00 00
 44 09 07 1D 0C C0 00 00 00
+45 02 1C 2C C0 00 00 00 empty water and descaled needed
+41 02 1C 2C C0 00 0F A0 descaled just done
 ```
 Caps remaining
 -------------
 06aa3a15-f22a-11e3-9daa-0002a5d5c51b is the caps remaining in stock in hex format (if you have add them in the apps)
 Value got from 00:00 to 03:E8 (from 0 caps to 1000).
-```
-06aa3a12-f22a-11e3-9daa-0002a5d5c51b
-44 09 80 0C C0 00 00
-44 09 80 2D C0 00 00
-44 09 07 2D C0 00 00
-44 09 07 1D 0C C0 00 00 00
-```
 But it can also contain from 03:E9 to FF:FF and in apps it appears a '+' instead of the caps value and ask you to follow caps purchase in apps (as if it was deactivate)
 The apps can notify you when value is low.
 
@@ -275,4 +271,13 @@ Try to send 5 or more and the value change to 4 automatically (seems that the co
 06aa3a44-f22a-11e3-9daa-0002a5d5c51b
 07 08 04 00
 07 08 03 00
+```
+Send a command
+--------------
+This machine has only 3 buttons, so you just need (once auth done) send directly command to:
+```
+UUID: 06aa3a42-f22a-11e3-9daa-0002a5d5c51b
+Value: 03050704000000000002 for lungo
+Value: 03050704000000000001 for expresso
+Value: 03050704000000000000 for ristretto
 ```
