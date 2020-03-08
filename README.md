@@ -44,7 +44,7 @@ In order to start this, you need to retrieve the AUTH-KEY. For this, I find this
 * Start the Nespresso App (you need to have registered this and connected to your machine already)
 * Brew a cup of coffee
 * Stop BLE HCI snoop.
-* Connect the mobile to USB/PC and copy/email the file (On Samsung, the snoop is here: \\Galaxy Note4\Phone\Android\data\btsnoop_hci.log)
+* Connect the mobile to USB/PC and copy or email the file (On Samsung, the snoop is here: \\Galaxy Note4\Phone\Android\data\btsnoop_hci.log)
 * Install wireshark (wireshark.org), learn a little about it: https://medium.com/@urish/reverse-engineering-a-bluetooth-lightbulb-56580fcb7546
 * Load the file in wire-shark
 * Look for Write Request to 0x0014 (Service 06aa3a41-f22a-11e3-9daa-0002a5d5c51b), the data part is the AUTH-key
@@ -132,7 +132,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  | Byte |    Bit    | Description                                       |
  +------+-----------+---------------------------------------------------+
- |  B0  | 1xxx xxx1 | Aclways 1                                         |
+ |  B0  | x1xx xxxx | Always 1                                          |
  |      | xxx1 xxx0 | Capsule mechanism jammed                          |
  |      | xxxx xxx1 | Water is empty                                    |
  +------+-----------+---------------------------------------------------+
@@ -163,7 +163,9 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      |           | Appears to be a count-down that is used to        |
  |      |           | signal when descaling it needed when it reaches   |
  |      |           | 000h, probably starting from FFFFh                |
- |      |           | When it reached 0000h, it set set B1.6            |
+ |      |           | When it reached 0000h, it set B1.6.               |
+ |      |           | Before descaling counter starts, the B6-B7 are    |
+ |      |           | not returned.                                     |
  |      |           | Unclear what the values actually represent        |
  |      |           | but they tend to go slower as longer we wait      |
  +------+-----------+---------------------------------------------------+
@@ -176,7 +178,7 @@ Quirks found:
 * After sending the brew command, you may get warming, water engaged and them coffee brew, seems to be some latency in status
 
 Examples:
-- Idle:       "40 02 01 E0 40 00 FF FF"
+- Idle:        "40 02 01 E0 40 00 FF FF"
 - Coffee:      "40 84 01 E0 40 00 FF FF"
 - Water:       "40 04 01 E0 40 00 FF FF"
 - Empty Water: "41 84 01 E0 40 00 FF FF" (capsule still locked in)
@@ -213,17 +215,17 @@ TODO's
 ======
 Here is a list of things I would like to progress on, in case I have that time somewhere in the future.
 
-TODO'S on the Code:
+TODO's on the Code:
 -------------------
 - Add status on the machine,
 - Add a display and some knob, allowing me to configre my different options
-- Since the BLE has too little reach, I'm thinking of making a web-service, suggestions are of course welcome
+- Since the BLE has too little reach, I'm thinking of making a web-service, suggestions are of course welcome.
 - There is absolutely no error handling, or even checks before trying to write
 - Stability should be in place here. I haven't tested this yet, AT ALL...
 - Next step would be to "arm" the brewbutton, so I by mistake don't break it
 
 Other protocol details I plan to investigate:
----------------------------------------
+---------------------------------------------
 - It would be great to be able to understand how the AUTH_KEY is generated/retrieved, alternatively add a server that emulates the nespresso machine, and stores the AUTH_KEY from the App. 
 - Can I query the status of the lid
 - Can I query if the lid has been opened since last cycle?
@@ -231,3 +233,46 @@ Other protocol details I plan to investigate:
 - Can I program the dials?
 - Planning on reversing a little more (status 0x0026) and also try to understand time program
 - What other data can I capture
+
+Tested machines
+---------------
+* Tested on nespresso expert
+* Tested on nespresso prodigio&milk by @tikismoke
+
+
+Comments from @tikismoke (thanks!)
+=======================
+Nespresso prodigio&milk
+Descaling ("detartrage" in french) so i have different value i hope to find what byte (or value changed) when i'll done it.
+For example the for value i get:
+
+```
+06aa3a12-f22a-11e3-9daa-0002a5d5c51b
+44 09 80 0C C0 00 00
+44 09 80 2D C0 00 00
+44 09 07 2D C0 00 00
+44 09 07 1D 0C C0 00 00 00
+```
+Caps remaining
+-------------
+06aa3a15-f22a-11e3-9daa-0002a5d5c51b is the caps remaining in stock in hex format (if you have add them in the apps)
+Value got from 00:00 to 03:E8 (from 0 caps to 1000).
+```
+06aa3a12-f22a-11e3-9daa-0002a5d5c51b
+44 09 80 0C C0 00 00
+44 09 80 2D C0 00 00
+44 09 07 2D C0 00 00
+44 09 07 1D 0C C0 00 00 00
+```
+But it can also contain from 03:E9 to FF:FF and in apps it appears a '+' instead of the caps value and ask you to follow caps purchase in apps (as if it was deactivate)
+The apps can notify you when value is low.
+
+Water hardness
+--------------
+byte 3.0 (04 or 03) is the "water hardness" ("dureté de l'eau" in french) set in the apps (from 0 to 4)
+Try to send 5 or more and the value change to 4 automatically (seems that the cofee machine maintain it too a correct value)
+```
+06aa3a44-f22a-11e3-9daa-0002a5d5c51b
+07 08 04 00
+07 08 03 00
+```
