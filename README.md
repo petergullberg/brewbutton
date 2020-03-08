@@ -162,8 +162,10 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  | B6B7 |   XX XX   | [2019-12-21] Updated                              |
  |      |           | Appears to be a count-down that is used to        |
  |      |           | signal when descaling it needed when it reaches   |
- |      |           | 000h, probably starting from FFFFh                |
- |      |           | When it reached 0000h, it set B1.6.               |
+ |      |           | 0000h, probably starting from FFFFh               |
+ |      |           | from 0FA0h in tikismoke case with                 |
+ |      |           | water hardness of 4                               |
+ |      |           | When it reached 0000h, it set B0.4.               |
  |      |           | Before descaling counter starts, the B6-B7 are    |
  |      |           | not returned.                                     |
  |      |           | Unclear what the values actually represent        |
