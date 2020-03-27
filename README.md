@@ -148,7 +148,8 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |  B2  | ???? ???? | tbc                                               |
  |      |           | Typical value 0x80                                |
  +------+-----------+---------------------------------------------------+
- |  B3  | xx1x xxxx | Capsule present / problem that cause error in apps|
+ |  B3  | xx1x xxxx | No problem that cause error in apps               |
+ |      |           | For example tray full or no new caps              |
  |      | ???? ???? | tbc                                               |
  |      |           | 05h, seen 06h                                     |
  +------+-----------+---------------------------------------------------+
