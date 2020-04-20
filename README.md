@@ -153,10 +153,9 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      | ???? ???? | tbc                                               |
  |      |           | 05h, seen 06h                                     |
  +------+-----------+---------------------------------------------------+
- |  B4  | ???? ???? | tbc                                               |
- |      |           | Typical value 0x80                                |
- |      |           | Have seen d0,80,40, and appears to change after   |
- |      |           | errror, so it potentiall could be last error      |
+ |  B4  | xx.. .... | Appears to be an error counter. It's incremented  |
+ |      |           | each time an error occurs. 00h,40h,80h,d0h,00h    |
+ |      |           | Maybe used to detect error                        |
  +------+-----------+---------------------------------------------------+
  |  B5  | ???? ???? | tbc                                               |
  |      |           |                                                   |
@@ -284,3 +283,7 @@ Value: 03050704000000000002 for lungo
 Value: 03050704000000000001 for expresso
 Value: 03050704000000000000 for ristretto
 ```
+
+Other notes
+-----------
+When a pod wasn't punctured (and hence no coffee flow) the error was 41840018000
