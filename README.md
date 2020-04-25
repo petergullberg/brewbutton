@@ -134,7 +134,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  |  B0  | x1xx xxxx | Always 1                                          |
  |      | xxx1 xxx0 | Capsule mechanism jammed                          |
- |      | xxxx 1xxx | Descaled needed                                   |
+ |      | xxxx x1xx | Descaled needed                                   |
  |      | xxxx xxx1 | Water is empty                                    |
  +------+-----------+---------------------------------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged                                   |
@@ -166,7 +166,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      |           | 0000h, probably starting from FFFFh               |
  |      |           | from 0FA0h in tikismoke case with                 |
  |      |           | water hardness of 4                               |
- |      |           | When it reached 0000h, it set B0.4.               |
+ |      |           | When it reached 0000h, it set B0.3.               |
  |      |           | Before descaling counter starts, the B6-B7 are    |
  |      |           | not returned.                                     |
  |      |           | Unclear what the values actually represent        |
