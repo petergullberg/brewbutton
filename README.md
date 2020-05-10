@@ -1,9 +1,12 @@
 Brewbutton
-============
+==========
 The nespresso expert is a piece of shit and the app even more. So this project aims to replace the mobile app, and allow you to brew your own stuff. The only reason I started banging my head on this BLE protocol, was that the default "lungo" on the front dial added too much water, making it undrinkable, and to overcome the crappy App and the Crappy default settings on the machine.
 
 The brewbutton, is a simple piece of code that connects to an nespresso machine, and when triggered by the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew. 
 My idea is to have a small brew button that can brew my morning coffe the way I want it.
+
+**Update: 2020-05-10:**
+I also added similar functionality using Web Bluetooth. If you managed to get your Auth-key, you can most probably use this straight away, if we you have Chrome & W10 or MAC, see below.
 
 I have contributed a little to the reverse engineered of the protocol, see below. 
 Part of this insights was based on: https://gist.github.com/farminf/94f681eaca2760212f457ac59da99f23
@@ -298,6 +301,9 @@ Some caveats here:
 
 Issues with this:
 * Same issue at the arduino version, we do not check that hte lid have been cycled.
+
+You should be able to test it right away:
+https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 
 ISSUE TRACKING ARDUINO VERSION
 ==============================
