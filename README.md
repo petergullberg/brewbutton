@@ -144,7 +144,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      |           | It also seeems to be indicator of descaling       |
  |      | xxx1 xxxx | Tray sensor tripped during brewing?               | 
  |      | xxxx 1xxx | Sleeping                                          |
- |      | xxxx x1xx | Water engaged                                     |
+ |      | xxxx x1xx | Water pump engaged                                |
  |      | xxxx xx1x | Awake, ok                                         |
  |      | xxxx xxx1 | Water temperature low / set while sleeping        |
  +------+-----------+---------------------------------------------------+
