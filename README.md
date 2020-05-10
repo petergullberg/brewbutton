@@ -1,4 +1,4 @@
-brewbutton
+Brewbutton
 ============
 The nespresso expert is a piece of shit and the app even more. So this project aims to replace the mobile app, and allow you to brew your own stuff. The only reason I started banging my head on this BLE protocol, was that the default "lungo" on the front dial added too much water, making it undrinkable, and to overcome the crappy App and the Crappy default settings on the machine.
 
@@ -153,7 +153,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  |  B4  | xx.. .... | Appears to be an error counter. It's incremented  |
  |      |           | each time an error occurs. 00h,40h,80h,d0h,00h    |
- |      |           | Maybe used to detect error                        |
+ |      |           | Maybe used to detect error (notifications)        |
  +------+-----------+---------------------------------------------------+
  |  B5  | ???? ???? | tbc                                               |
  |      |           |                                                   |
@@ -278,3 +278,29 @@ Try to send 5 or more and the value change to 4 automatically (seems that the co
 
 Other notes:
 When a pod wasn't punctured (and hence no coffee flow) the error was 41840018000
+
+Nespresso w/ WebBluetooth
+=========================
+Recently I have been working on learning Web-Bluetooth and JavaScript, and what is better
+than to have an  actual device to work on.
+The current implementation is very experimental (as always), "brewbutton.html".
+I made an simple implementation of the protocol in Web Bluetooth/JavaScript. There are quite many things left to manage, but it's a start.
+
+Some caveats here:
+* Unless you use local host, you need to have SSL (e.g. letsencrypt & Apache)
+* You may need to have experimental settings in the browser (To be verified)
+* You need Windows 10, BLE does not work on W7
+* Chrome / (new) Edge works fine, but NOT Safari (and no plans)
+* May work on Chrome Android
+* iOS is not really working today, and currently no plans
+* Have tried WebBluetooth w/ Chrome on W10 and MacBook Pro from 2012, and works fine.
+* On Windows 10, you MUST pair the Nespresso machine from Windows control panel.
+
+Issues with this:
+* Same issue at the arduino version, we do not check that hte lid have been cycled.
+
+ISSUE TRACKING ARDUINO VERSION
+==============================
+There are some outstanding issues, will be further investigated.
+* Descaler needed: B1.6 (Expert) or B0.2 (prodigio&milk). One or the other or both. This needs to be weeded out
+* ...
