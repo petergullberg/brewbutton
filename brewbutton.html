@@ -8,9 +8,9 @@
   ––>
   <!-- ToDo's:
 	* Change the methods, that we don't need to to reselect each time windows starts screensaver
-	* Make BLE communication more robust
+	* Make BLE handling and communication more robust
 	* Investigate all error codes
-	*
+	* should manage re-connect
     -->
 
 <h1>Nespresso Brewbutton</h1>
@@ -53,7 +53,6 @@ var RemoteCharacteristicStatus;
 
 var deviceServiceUUID  = "06aa1910-f22a-11e3-9daa-0002a5d5c51b";
 
-//?? Why is this same as deviceSErviceUUID?
 const auth_ServiceUUID   = "06aa1910-f22a-11e3-9daa-0002a5d5c51b";
 const auth_CharUUID         = "06aa3a41-f22a-11e3-9daa-0002a5d5c51b";
 
@@ -63,10 +62,8 @@ const cmd_CmdStatusCharUUID = "06aa3a12-f22a-11e3-9daa-0002a5d5c51b";
 
 
 
-
+// This variable holds the Authentication Block
 var nespressoDeviceAuth  = new Uint8Array(8);
-//[0x87,0x96,0x08, 0xe2, 0x7c, 0xb1, 0xf9, 0x6e]);
-//"879608e27cb1f96e"; // auth stringreplace
 
 ////////////////////////////////////////
 // CODE SECTION
@@ -89,8 +86,9 @@ function ClearButton() {
 
 
 // This contains the perfect brew (According to me)
-// If you want to change these, please check README.md, which specifies these commands
+// If you want to understand or change these, please check README.md, which specifies these commands
 perfectRecipe     = new Uint8Array([ 0x01, 0x10, 0x08, 0x00, 0x00, 0x01, 0x00, 0x82, 0x00, 0x00,0x00]);
+// Sequence to execute the brew command
 perfectRecipeBrew = new Uint8Array([ 0x03, 0x05, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07 ]);
 
 async function BrewButton() {
@@ -99,7 +97,9 @@ async function BrewButton() {
 		log_line("Brewing coffee");
 
 		// I do not check whether the machine is ready to brew!
-		// should check: lid-cycling, out of water, engaged, other blocking error
+		// should check: lid-cycling, engaged, other blocking error
+		// Out of water should probably not be checked, since the machine does not
+		// detect when user have added water
 
 		await RemoteCharacteristicCommand.writeValue( perfectRecipe);
 		await RemoteCharacteristicCommand.writeValue( perfectRecipeBrew );
@@ -167,6 +167,22 @@ function handleStatusNotification(event) {
   parse_status(view);
 }
 
+function DisplayCharInfo(characteristics) {
+
+    log_line('> Characteristic UUID:  ' + characteristic.uuid);
+    log_line('> Broadcast:            ' + characteristic.properties.broadcast);
+    log_line('> Read:                 ' + characteristic.properties.read);
+    log_line('> Write w/o response:   ' +
+      characteristic.properties.writeWithoutResponse);
+    log_line('> Write:                ' + characteristic.properties.write);
+    log_line('> Notify:               ' + characteristic.properties.notify);
+    log_line('> Indicate:             ' + characteristic.properties.indicate);
+    log_line('> Signed Write:         ' +
+      characteristic.properties.authenticatedSignedWrites);
+    log_line('> Queued Write:         ' + characteristic.properties.reliableWrite);
+    log_line('> Writable Auxiliaries: ' +
+      characteristic.properties.writableAuxiliaries);
+}
 async function StatusButton() {
   try {
 	if ( RemoteCharacteristicStatus.properties.read) {
@@ -183,6 +199,7 @@ async function StatusButton() {
 function onTest() {
 	log_line("Not very much in this function");
 }
+
 async function ConnectButton() {
 
 	// Clear log
@@ -218,23 +235,8 @@ async function ConnectButton() {
     cmd_service = await server.getPrimaryService(cmd_ServiceUUID);
 
     log_line('Getting Characteristic...');
-    //characteristic = await service.getCharacteristic(auth_CharUUID);
 	RemoteCharacteristicAuth    = await auth_service.getCharacteristic(auth_CharUUID);
-/*
-    log_line('> Characteristic UUID:  ' + characteristic.uuid);
-    log_line('> Broadcast:            ' + characteristic.properties.broadcast);
-    log_line('> Read:                 ' + characteristic.properties.read);
-    log_line('> Write w/o response:   ' +
-      characteristic.properties.writeWithoutResponse);
-    log_line('> Write:                ' + characteristic.properties.write);
-    log_line('> Notify:               ' + characteristic.properties.notify);
-    log_line('> Indicate:             ' + characteristic.properties.indicate);
-    log_line('> Signed Write:         ' +
-      characteristic.properties.authenticatedSignedWrites);
-    log_line('> Queued Write:         ' + characteristic.properties.reliableWrite);
-    log_line('> Writable Auxiliaries: ' +
-      characteristic.properties.writableAuxiliaries);
-*/
+
     log_line("established auth characteristic?");
 
 
