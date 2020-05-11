@@ -6,7 +6,8 @@ The brewbutton, is a simple piece of code that connects to an nespresso machine,
 My idea is to have a small brew button that can brew my morning coffe the way I want it.
 
 **Update: 2020-05-10:**
-I also added similar functionality using Web Bluetooth. If you managed to get your Auth-key, you can most probably use this straight away, if we you have Chrome & W10 or MAC, see below.
+I also added similar functionality using Web Bluetooth. If you managed to get your Auth-key, you can most probably use this straight away, if we you have Chrome & W10 or MAC, see below. You should be able to test it right away. https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
+
 
 I have contributed a little to the reverse engineered of the protocol, see below. 
 Part of this insights was based on: https://gist.github.com/farminf/94f681eaca2760212f457ac59da99f23
@@ -144,7 +145,7 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      |           | It also seeems to be indicator of descaling       |
  |      | xxx1 xxxx | Tray sensor tripped during brewing?               | 
  |      | xxxx 1xxx | Sleeping                                          |
- |      | xxxx x1xx | Water engaged                                     |
+ |      | xxxx x1xx | Water pump engaged                                |
  |      | xxxx xx1x | Awake, ok                                         |
  |      | xxxx xxx1 | Water temperature low / set while sleeping        |
  +------+-----------+---------------------------------------------------+
@@ -302,11 +303,14 @@ Some caveats here:
 Issues with this:
 * Same issue at the arduino version, we do not check that hte lid have been cycled.
 
-You should be able to test it right away:
-https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
+Specification and examples:
+* https://webbluetoothcg.github.io/web-bluetooth/
+* https://github.com/WebBluetoothCG/
+* https://googlechrome.github.io/samples/web-bluetooth/ - A bunch of good examples
+
 
 ISSUE TRACKING ARDUINO VERSION
 ==============================
 There are some outstanding issues, will be further investigated.
-* Descaler needed: B1.6 (Expert) or B0.2 (prodigio&milk). One or the other or both. This needs to be weeded out
+* Need to resolve this: when descaler is needed, there seem to be a discrepancy between B1.6 (Expert) or B0.2 (prodigio&milk). One or the other or both. This needs to be weeded out
 * ...
