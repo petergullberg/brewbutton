@@ -190,7 +190,7 @@ Examples:
 
 CMD_RESPONSE_STATUS
 -------------------
-It appears that the characteristic 06aa3a52-f22a-11e3-9daa-0002a5d5c51b is the Command Response status of commands sent over Bluetooth.
+It appears that the characteristic 06aa3a52-f22a-11e3-9daa-0002a5d5c51b is the RESPONSE from COMMANDS sent over Bluetooth (06aa3a42-f22a-11e3-9daa-0002a5d5c51b).
 This need to be clarified more in detail, but this is what I have found so far:
 ```
 The command structure in both ways appears to be:
