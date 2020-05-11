@@ -188,6 +188,46 @@ Examples:
 - Tray full:   "40 4x 
 ```
 
+CMD_RESPONSE_STATUS
+-------------------
+It appears that the characteristic 06aa3a52-f22a-11e3-9daa-0002a5d5c51b is the Command Response status of commands sent over Bluetooth.
+This need to be clarified more in detail, but this is what I have found so far:
+```
+The command structure in both ways appears to be:
+{2B_CMD}{L}{DATA}  => 
+{2B_RESP}{L}{DATA} <=
+B0.7 represent 0=CMD, 1=RESP
+B0.6 represent ERROR
+
+ +-------------------------------------+-------------------------------------------------------------------------+
+ | Sequence                            | Interpretation                                                          |
+ +-------------------------------------+-------------------------------------------------------------------------+
+ | CMD : 03050704000000000200          | Send normal brew command                                                |
+ | RESP: 83 05 01 20                   | Success (8x) on last command (Brew=x3 05), respcode:len(01),data(20)    |
+ |                                     |                                                                         |
+ | CMD : 03050704000000000200          | Send normal brew command, but did not cycle lid (=new pod)              |
+ | RESP: c3 05 02 24 12                | Failure (cx) on last command (brew=x3 05), respCode:len(02),data(24 12) |
+ |                                     | Reason(24 12) Lid not cycled                                            | 
+ |                                     |                                                                         |
+ | CMD : 03050704000000000500          | Send incorrect brew command                                             |
+ | RESP: c3 05 02 36 03                | Failure (cx) on last command (brew=x3 05), respCode:len(02),data(36 03) |
+ |                                     | Reason(36 03) Wrong command                                             | 
+ |                                     |                                                                         |
+ | CMD : 0110080000010061020024        | Send prepare brew command, while not having cycled lid                  |
+ | RESP: c1 10 02 23 60                | Failure (cx), cmd x110 ok status=20                                     |
+ |                                     |                                                                         |
+ | CMD : 0110080000010061020024        | Send prepare brew command, after cyclcing lid                           |
+ | RESP: 81 10 01 20                   | Success (8x) last cmd x110 ok Reason=20                                 |
+ |                                     |                                                                         |
+ | CMD : 03060102                      | Send abort command (while not brewing)                                  |
+ | RESP: c3 06 01 21                   | Failure (cx) on last command (cmd=x3 06), respCode:len(01),data(21)     |
+ |                                     | Reason(21)                                                              | 
+ +-------------------------------------+-------------------------------------------------------------------------+
+
+After reboot, the characteristics is empty.
+```
+
+
 Slider status
 -------------
 The capsule slider status is on characteristic 06aa3a22-f22a-11e3-9daa-0002a5d5c51b
@@ -230,8 +270,8 @@ TODO's on the Code:
 Other protocol details I plan to investigate:
 ---------------------------------------------
 - It would be great to be able to understand how the AUTH_KEY is generated/retrieved, alternatively add a server that emulates the nespresso machine, and stores the AUTH_KEY from the App. 
-- Can I query the status of the lid
-- Can I query if the lid has been opened since last cycle?
+- Can I query the status of the lid (RESOLVED)
+- Can I query if the lid has been opened since last cycle? (RESOLVED - CMD_RESP_STATUS)
 - Would like to investigate the scheduling option
 - Can I program the dials?
 - Planning on reversing a little more (status 0x0026) and also try to understand time program
