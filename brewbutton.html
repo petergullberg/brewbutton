@@ -49,7 +49,7 @@ var characteristics;
 var RemoteCharacteristicAuth;
 var RemoteCharacteristicCommand;
 var RemoteCharacteristicStatus;
-
+var RemoteCharacteristicResponseStatus;
 
 var deviceServiceUUID  = "06aa1910-f22a-11e3-9daa-0002a5d5c51b";
 
@@ -59,6 +59,7 @@ const auth_CharUUID         = "06aa3a41-f22a-11e3-9daa-0002a5d5c51b";
 const cmd_ServiceUUID    = "06aa1920-f22a-11e3-9daa-0002a5d5c51b";
 const cmd_CmdCharUUID       = "06aa3a42-f22a-11e3-9daa-0002a5d5c51b";
 const cmd_CmdStatusCharUUID = "06aa3a12-f22a-11e3-9daa-0002a5d5c51b";
+const cmd_RespStatusCharUUID = "06aa3a52-f22a-11e3-9daa-0002a5d5c51b";
 
 
 
@@ -84,14 +85,81 @@ function ClearButton() {
   document.getElementById("status").innerHTML = "";
 }
 
+// Returns 0 in case of cmd error (0xCx) or unknown status
+// resp as a DataView object
+// sentCMd - the command, formatted as uint8array
+function check_respStatus( resp, sentCmd ) {
+	var rv = 1;
+
+	//log_line(resp.getUint8(0) + " " + resp.getUint8(1));
+	//log_line(sentCmd);
+
+
+	if ( (sentCmd[0] == (resp.getUint8(0) & 0x3F)) &&
+	       (sentCmd[1] == resp.getUint8(1)) ) {
+		// CMD_RESP_STATUS corresponds to the actual sent command
+		var resp_code = 0;
+
+		// Extract response code
+		switch ( resp.getUint8(0) & 0xC0 ) {
+			case 0xC0:
+				rv = 0;
+				log_line('error');
+				break;
+			case 0x80:
+				log_line('ok');
+				break;
+			default:
+				rv = 0;
+				log_line('unknown status');
+				break;
+		}
+		// Extract response code, either 1B or 2B response
+		switch ( resp.getUint8(2) ) {
+			case 1:
+				resp_code = resp.getUint8(3);
+				break;
+			case 2:
+				resp_code = (resp.getUint8(3)<<8) | (resp.getUint8(4));
+				break
+			default:
+				log_line('unknown command');
+		}
+		// Check response code (assuming they have same global meaning)
+		switch ( resp_code ) {
+			case 0x20:
+				// ok - no extra logging
+				break;
+			case 0x21:
+				log_line("Abort command");
+				break;
+			case 0x2412:
+				log_line('Insert POD');
+				status_line("Insert pod");
+				break;
+			case 0x3603:
+				log_line("command error");
+				break;
+			default:
+				log_line("unknown error");
+				break;
+		}
+		log_line('status-code: ' + resp_code);
+	}
+	else {
+		rv = 0;
+		log_line('wrong command');
+	}
+	return rv;
+}
 
 // This contains the perfect brew (According to me)
 // If you want to understand or change these, please check README.md, which specifies these commands
 perfectRecipe     = new Uint8Array([ 0x01, 0x10, 0x08, 0x00, 0x00, 0x01, 0x00, 0x82, 0x00, 0x00,0x00]);
 // Sequence to execute the brew command
 perfectRecipeBrew = new Uint8Array([ 0x03, 0x05, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07 ]);
-
 async function BrewButton() {
+
 	try {
 		log_line("===================");
 		log_line("Brewing coffee");
@@ -102,7 +170,24 @@ async function BrewButton() {
 		// detect when user have added water
 
 		await RemoteCharacteristicCommand.writeValue( perfectRecipe);
+		resp = await RemoteCharacteristicResponseStatus.readValue();
+		if ( !check_respStatus(resp, perfectRecipe ) ) {
+			return;
+		}
+
 		await RemoteCharacteristicCommand.writeValue( perfectRecipeBrew );
+
+		// The status is not immediately retrieved...
+		// Tnis is a workaround, since I don't know how I could wait a little to check sutat
+		//
+		resp = await RemoteCharacteristicResponseStatus.readValue();
+		resp = await RemoteCharacteristicResponseStatus.readValue();
+		resp = await RemoteCharacteristicResponseStatus.readValue();
+		resp = await RemoteCharacteristicResponseStatus.readValue();
+		if ( !check_respStatus(resp, perfectRecipeBrew ) ) {
+			return;
+		}
+
 
 		log_line("Your perfect brew is about to be delivered");
 	} catch(error) {
@@ -249,6 +334,8 @@ async function ConnectButton() {
 
 	RemoteCharacteristicCommand = await cmd_service.getCharacteristic(cmd_CmdCharUUID);
 	RemoteCharacteristicStatus  = await cmd_service.getCharacteristic(cmd_CmdStatusCharUUID);
+	RemoteCharacteristicResponseStatus  = await cmd_service.getCharacteristic(cmd_RespStatusCharUUID);
+
 
 	await RemoteCharacteristicStatus.startNotifications();
     log_line("Notifications started");
