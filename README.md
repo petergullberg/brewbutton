@@ -49,6 +49,10 @@ In order to start this, you need to retrieve the AUTH-KEY. For this, I find this
 * Brew a cup of coffee
 * Stop BLE HCI snoop.
 * Connect the mobile to USB/PC and copy or email the file (On Samsung, the snoop is here: \\Galaxy Note4\Phone\Android\data\btsnoop_hci.log)
+* If you don't want to mess with WireShark, but uses Linux, you can try this command (at least it works for me)
+```
+hexdump -v -e '/1 "%02X "' btsnoop_hci.log | grep -o '0B 00 04 00 12 14 00 \<.. .. .. .. .. .. .. ..\>'
+```
 * Install wireshark (wireshark.org), learn a little about it: https://medium.com/@urish/reverse-engineering-a-bluetooth-lightbulb-56580fcb7546
 * Load the file in wire-shark
 * Look for Write Request to 0x0014 (Service 06aa3a41-f22a-11e3-9daa-0002a5d5c51b), the data part is the AUTH-key
