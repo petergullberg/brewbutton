@@ -25,18 +25,20 @@ AuthKey (Change this accordingly:):
 <!-- AuthKey is default to MY machine, change accordingly -->
 <input type="text" id="authKey" value="879608e27cb1f96e">
 <BR><BR>
-<button onclick="ConnectButton()">Connect</button>
-<button onclick="StatusButton()">Status</button>
-<button onclick="BrewButton()">Brew!</button>
-<button onclick="ClearButton()">Clear!</button>
-<button onclick="onTest()">Test!</button>
+	<button onclick="onReload()">Reload page</button>
+	<button onclick="ConnectButton()">Connect</button>
+	<button onclick="StatusButton()">Status</button>
+	<button onclick="BrewButton()">Brew!</button>
+	<button onclick="ClearButton()">Clear!</button>
+	<button onclick="onCancel()">Cancel Brew!</button>
+
 
 
 <BR><BR>
 <textarea id="status" rows="1" cols="70" disabled></textarea>
 <BR><BR>
 
-<textarea id="log" rows="10" cols="70" disabled></textarea><BR>
+<textarea id="log" rows="15" cols="70" disabled></textarea><BR>
 
 <script>
 // GLOBALS
@@ -69,20 +71,29 @@ var nespressoDeviceAuth  = new Uint8Array(8);
 ////////////////////////////////////////
 // CODE SECTION
 ////////////////////////////////////////
+
+var log_element = document.getElementById('log');
+
 function log_line(str){
-  document.getElementById("log").innerHTML =
-  document.getElementById("log").innerHTML + str + "\n";
+	log.value += str + "\n";
+	log.scrollTop = log.scrollHeight;
 }
 function log_clear() {
-	document.getElementById("log").innerHTML = "";
+	log.value = "";
+	log.scrollTop = log.scrollHeight;
 }
+
 function status_line(str){
   document.getElementById("status").innerHTML = str;
 }
 
+function status_clear() {
+	document.getElementById("status").innerHTML = "";
+}
+
 function ClearButton() {
-  document.getElementById("log").innerHTML = "";
-  document.getElementById("status").innerHTML = "";
+  log_clear();
+  status_clear();
 }
 
 // Returns 0 in case of cmd error (0xCx) or unknown status
@@ -91,7 +102,7 @@ function ClearButton() {
 function check_respStatus( resp, sentCmd ) {
 	var rv = 1;
 
-	//log_line(resp.getUint8(0) + " " + resp.getUint8(1));
+	log_line(resp.getUint8(0) + " " + resp.getUint8(1));
 	//log_line(sentCmd);
 
 
@@ -131,7 +142,7 @@ function check_respStatus( resp, sentCmd ) {
 				// ok - no extra logging
 				break;
 			case 0x21:
-				log_line("Abort command");
+				log_line("Brew cancelled");
 				break;
 			case 0x2412:
 				log_line('Insert POD');
@@ -150,7 +161,17 @@ function check_respStatus( resp, sentCmd ) {
 		rv = 0;
 		log_line('wrong command');
 	}
+
 	return rv;
+}
+
+cancelBrew = new Uint8Array([ 0x03, 0x06, 0x01, 0x02]);
+
+async function onCancel() {
+	log_line("Cancelling brew");
+	await RemoteCharacteristicCommand.writeValue( cancelBrew );
+	resp = await RemoteCharacteristicResponseStatus.readValue();
+	check_respStatus(resp, cancelBrew );
 }
 
 // This contains the perfect brew (According to me)
@@ -281,7 +302,8 @@ async function StatusButton() {
   }
 }
 
-function onTest() {
+function onReload() {
+	location.reload();
 	log_line("Not very much in this function");
 }
 
