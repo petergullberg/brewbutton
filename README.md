@@ -61,10 +61,8 @@ hexdump -v -e '/1 "%02X "' btsnoop_hci.log | grep -o '0B 00 04 00 12 14 00 \<.. 
 TEST AUTH-KEY
 -------------
 * A simple way to test the AuthKey is to use the Web Bluetooth web-page that is part of this project 
-```
 https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 Test on Chrome on Mac and Win10
-```
 * Another way is to download the GATTBrowser from Renesas, you have it on both iPhone/Android
 * Make sure your Nespresso app is not running, as the machine only accepts one connection
 * Find and connect to the nespresso device
