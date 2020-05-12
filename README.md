@@ -2,14 +2,14 @@ Brewbutton
 ==========
 The nespresso expert is a piece of shit and the app even more. So this project aims to replace the mobile app, and allow you to brew your own stuff. The only reason I started banging my head on this BLE protocol, was that the default "lungo" on the front dial added too much water, making it undrinkable, and to overcome the crappy App and the Crappy default settings on the machine.
 
-The brewbutton, is a simple piece of code that connects to an nespresso machine, and when triggered by the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew. 
+The brewbutton, is a simple piece of code that connects to an nespresso machine, and when triggered by the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew.
 My idea is to have a small brew button that can brew my morning coffe the way I want it.
 
 **Update: 2020-05-10:**
 I also added similar functionality using Web Bluetooth. If you managed to get your Auth-key, you can most probably use this straight away, if we you have Chrome & W10 or MAC, see below. You should be able to test it right away. https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 
 
-I have contributed a little to the reverse engineered of the protocol, see below. 
+I have contributed a little to the reverse engineered of the protocol, see below.
 Part of this insights was based on: https://gist.github.com/farminf/94f681eaca2760212f457ac59da99f23
 
 HOW TO START
@@ -19,7 +19,7 @@ HW and environment setup
 ------------
 
 The brew button is based on a simple ESP32 example, where I only added a debounced PIN, and  stuff needed to program the nespresso machine. There might be alternatives here, but I put it here as a reference.
-* Arduino IDE 1.8.10 
+* Arduino IDE 1.8.10
 * NodeMCU ESP-32s(v1.1) with Bluetooth Low Energy support. https://hitechchain.se/iot/esp32-wemos-mini-d1-wifi-bluetooth
 * ESP32 BLE Arduino v1.0.1 library
 * Install I2C LCD - http://www.esp32learning.com/code/esp32-and-i2c-lcd-example.php
@@ -111,7 +111,7 @@ Brew command (0x0024):
  | - 07 = Recipe                               |
  +---------------------------------------------+
 
-To brew a recipe coffe, you write preparation command and then the brew command. When doing the analysis, the app sends 
+To brew a recipe coffe, you write preparation command and then the brew command. When doing the analysis, the app sends
 What I noticed was that when water ran out, "water engaged" was still active, as it hadn't reached it's volume
 
 ```
@@ -121,7 +121,7 @@ What I noticed was that when water ran out, "water engaged" was still active, as
 ```
 Prepare command    ------->   Write char (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C) 10B
 Read Char          <-------   Read char (0x0026) 20B
-Brew command       ------->   Write char (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C) 10B 
+Brew command       ------->   Write char (06aa3a12-f22a-11e3-9daa-0002a5d5c51b) (0x001C) 10B
 Read Char          <-------   Read (0x0026) 20B
 Read STATUS        <-------   Read 0x001C 8B
 ```
@@ -141,9 +141,9 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      | xxxx xxx1 | Water is empty                                    |
  +------+-----------+---------------------------------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged                                   |
- |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips| 
+ |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips|
  |      |           | It also seeems to be indicator of descaling       |
- |      | xxx1 xxxx | Tray sensor tripped during brewing?               | 
+ |      | xxx1 xxxx | Tray sensor tripped during brewing?               |
  |      | xxxx 1xxx | Sleeping                                          |
  |      | xxxx x1xx | Water pump engaged                                |
  |      | xxxx xx1x | Awake, ok                                         |
@@ -185,7 +185,7 @@ Examples:
 - Coffee:      "40 84 01 E0 40 00 FF FF"
 - Water:       "40 04 01 E0 40 00 FF FF"
 - Empty Water: "41 84 01 E0 40 00 FF FF" (capsule still locked in)
-- Tray full:   "40 4x 
+- Tray full:   "40 4x
 ```
 
 Slider status
@@ -229,7 +229,7 @@ TODO's on the Code:
 
 Other protocol details I plan to investigate:
 ---------------------------------------------
-- It would be great to be able to understand how the AUTH_KEY is generated/retrieved, alternatively add a server that emulates the nespresso machine, and stores the AUTH_KEY from the App. 
+- It would be great to be able to understand how the AUTH_KEY is generated/retrieved, alternatively add a server that emulates the nespresso machine, and stores the AUTH_KEY from the App.
 - Can I query the status of the lid
 - Can I query if the lid has been opened since last cycle?
 - Would like to investigate the scheduling option
@@ -307,6 +307,7 @@ Specification and examples:
 * https://webbluetoothcg.github.io/web-bluetooth/
 * https://github.com/WebBluetoothCG/
 * https://googlechrome.github.io/samples/web-bluetooth/ - A bunch of good examples
+* https://www.smashingmagazine.com/2019/02/introduction-to-webbluetooth/ - Good intro to Web Bluetooth
 
 
 ISSUE TRACKING ARDUINO VERSION
