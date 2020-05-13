@@ -60,7 +60,7 @@ hexdump -v -e '/1 "%02X "' btsnoop_hci.log | grep -o '0B 00 04 00 12 14 00 \<.. 
 
 TEST AUTH-KEY
 -------------
-* A simple way to test the AuthKey is to use the Web Bluetooth web-page that is part of this project 
+* A simple way to test the AuthKey is to use the Web Bluetooth web-page that is part of this project
 https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 Test on Chrome on Mac and Win10
 * Another way is to download the GATTBrowser from Renesas, you have it on both iPhone/Android
@@ -212,7 +212,7 @@ B0.6 represent ERROR
  | CMD : 03050704000000000200          | Send normal brew command                                                |
  | RESP: 83 05 01 20                   | Success (8x) on last command (Brew=x3 05), respcode:len(01),data(20)    |
  |                                     |                                                                         |
- | CMD : 03050704000000000200          | Send normal brew command, but did not cycle lid (=new pod)              |
+ | CMD : 03050704000000000200          | Send normal brew command, but did not cycle lid (no new pod)            |
  | RESP: c3 05 02 24 12                | Failure (cx) on last command (brew=x3 05), respCode:len(02),data(24 12) |
  |                                     | Reason(24 12) Lid not cycled                                            |
  |                                     |                                                                         |
@@ -221,7 +221,7 @@ B0.6 represent ERROR
  |                                     | Reason(36 03) Wrong command                                             |
  |                                     |                                                                         |
  | CMD : 0110080000010061020024        | Send prepare brew command, while not having cycled lid                  |
- | RESP: c1 10 02 23 60                | Failure (cx), cmd x110 ok status=20                                     |
+ | RESP: c1 10 02 23 60                | Failure (cx), cmd x110 ok status=2360                                   |
  |                                     |                                                                         |
  | CMD : 0110080000010061020024        | Send prepare brew command, after cyclcing lid                           |
  | RESP: 81 10 01 20                   | Success (8x) last cmd x110 ok Reason=20                                 |
