@@ -234,6 +234,8 @@ B0.6 represent ERROR
  | RESP: c3 06 01 21                   | Failure (cx) on last command (cmd=x3 06), respCode:len(01),data(21)     |
  |                                     | Reason(21)                                                              |
  +-------------------------------------+-------------------------------------------------------------------------+
+Other errors: 
+ * 0x2403 => Trays full
 
 After reboot, the characteristics is empty.
 ```
