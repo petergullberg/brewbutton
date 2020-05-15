@@ -15,7 +15,7 @@ Brewbutton in Chrome
 **Update: 2020-05-10:**
 I also added similar functionality using Browser Web Bluetooth. If you managed to get your Auth-key, you can most probably use this straight away, if we you have Chrome & W10 or MAC, see below. You should be able to test it right away, directly in browser. https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 
-![QR-code](qr_example.jpg)
+![QR-code](qr_example.png)
 bluefy://open?url=https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 
 
