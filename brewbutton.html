@@ -102,7 +102,7 @@ function ClearButton() {
 function check_respStatus( resp, sentCmd ) {
 	var rv = 1;
 
-	log_line(resp.getUint8(0) + " " + resp.getUint8(1));
+	log_line(resp.getUint8(0).toString(16) + " " + resp.getUint8(1).toString(16));
 	//log_line(sentCmd);
 
 
@@ -155,7 +155,7 @@ function check_respStatus( resp, sentCmd ) {
 				log_line("unknown error");
 				break;
 		}
-		log_line('status-code: ' + resp_code);
+		log_line('status-code: ' + resp_code.toString(16));
 	}
 	else {
 		rv = 0;
@@ -230,10 +230,12 @@ function SetAuthKey(str) {
 		log_line("AuthKey Error\n");
 		return;
 	}
+	tmp = "AuthKey :";
 	for (var i = 0; i < 8; i++ ) {
 		nespressoDeviceAuth[i] = parseInt(str.substr(i*2, 2), 16);
+		tmp = tmp  + " " + nespressoDeviceAuth[i].toString(16);
 	}
-	log_line("AuthKey (dec): " + nespressoDeviceAuth);
+	log_line(tmp);
 //	return buffer;
 }
 
