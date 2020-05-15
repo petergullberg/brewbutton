@@ -16,7 +16,7 @@ Brewbutton in Chrome
 I also added similar functionality using Browser Web Bluetooth. If you managed to get your Auth-key, you can most probably use this straight away, if we you have Chrome & W10 or MAC, see below. You should be able to test it right away, directly in browser. https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 
 ![QR-code](qr_example.png)
-bluefy://open?url=https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
+bluefy://open?url=https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html?authKey=PutYourKeyHere
 
 
 HOW TO START
@@ -63,7 +63,7 @@ hexdump -v -e '/1 "%02X "' btsnoop_hci.log | grep -o '0B 00 04 00 12 14 00 \<.. 
 * Install wireshark (wireshark.org), learn a little about it: https://medium.com/@urish/reverse-engineering-a-bluetooth-lightbulb-56580fcb7546
 * Load the file in wire-shark
 * Look for Write Request to 0x0014 (Service 06aa3a41-f22a-11e3-9daa-0002a5d5c51b), the data part is the AUTH-key
-* Extract the AUTH-KEY (8bytes), mine is "879608e27cb1f96e"
+* Extract the AUTH-KEY (8bytes)
 
 TEST AUTH-KEY
 -------------
@@ -237,7 +237,7 @@ B0.6 represent ERROR
  | RESP: c3 06 01 21                   | Failure (cx) on last command (cmd=x3 06), respCode:len(01),data(21)     |
  |                                     | Reason(21)                                                              |
  +-------------------------------------+-------------------------------------------------------------------------+
-Other errors: 
+Other errors:
  * 0x2403 => Trays full
 
 After reboot, the characteristics is empty.
