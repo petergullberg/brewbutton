@@ -10,19 +10,17 @@ The brewbutton Android
 , is a simple piece of code that connects to an nespresso machine, and when triggered by the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew.
 My idea is to have a small brew button that can brew my morning coffe the way I want it.
 
-Brewbutton in Chrome
---------------------
-**Update: 2020-05-10:**
-I also added similar functionality using Browser Web Bluetooth. If you managed to get your Auth-key, you can most probably use this straight away, if we you have Chrome & W10 or MAC, see below. You should be able to test it right away, directly in browser. https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
+Brewbutton in the browser
+-------------------------
+With the html file, you can brew your coffee directly from the browser. It uses the Web Bluetooth API and does not require any installation or coding to make it work. You only need to get your AuthKey (See below). If you have Chrome & W10 or MAC, see below. You should be able to test it right away, directly in browser. https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 
-```
-Below is a QR-code to run Web Bluetooth on iPhone BlueFy
-![QR-code](qr_example.png)
+Below is a QR-code to run Web Bluetooth on iPhone BlueFy<br>
+![QR-code](qr_example.png)<br>
 
-bluefy://open?url=https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html?authKey=PutYourKeyHere
-Your authkey should be 8 hexadecimal characters without space
+bluefy://open?url=https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html?authKey=PutYourKeyHere<br>
+Your authkey should be 8 hexadecimal characters without space<br>
 Example: authKey=2a2b45ffaabbccdd
-```
+
 
 
 HOW TO START
