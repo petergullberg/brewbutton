@@ -23,7 +23,7 @@ I'm using async promises, which I find most straight forward to program with.
 AuthKey (Change this accordingly:):
 
 <!-- AuthKey is default to MY machine, change accordingly -->
-<input type="text" id="authKey" value="879608e27cb1f96e">
+<input type="text" id="authKey" value="">
 <BR><BR>
 	<button onclick="onReload()">Reload page</button>
 	<button onclick="ConnectButton()">Connect</button>
@@ -72,6 +72,19 @@ var nespressoDeviceAuth  = new Uint8Array(8);
 // CODE SECTION
 ////////////////////////////////////////
 
+
+function parse_url(){
+	var urlParams = new URLSearchParams(window.location.search);
+//	log_line(urlParams);
+	var value = urlParams.get('authKey');
+	log_line(value);
+	if (null == value) {
+		log_line("Setting default");
+		value = "1234567812345678";
+	}
+	document.querySelector('#authKey').value = value;
+}
+parse_url();
 var log_element = document.getElementById('log');
 
 function log_line(str){
