@@ -264,7 +264,6 @@ function parse_status(view) {
 		tmp_str += hex_str.charAt(hex&0x0F);
 		tmp_str += " ";
 	}
-
 	val_buf = "Status: hex(" + tmp_str + ") : ";
 	if ( view.getUint8(0) & 0x01 ) // Water empty
 		val_buf += "no water ";
@@ -277,6 +276,79 @@ function parse_status(view) {
 
 	status_line(val_buf);
 }
+function extended_parse_status(view) {
+	log_line("Extended status:");
+// +------+-----------+---------------------------------------------------+
+// | Byte |    Bit    | Description                                       |
+// +------+-----------+---------------------------------------------------+
+// |  B0  | x1xx xxxx | Always 1                                          |
+// |      | xxx1 xxx0 | Capsule mechanism jammed                          |
+// |      | xxxx xxx1 | Water is empty                                    |
+// +------+-----------+---------------------------------------------------+
+	switch ( view.getUint8(0) & 0x11 ) {
+		case 0x01:						 // Water empty
+			log_line("- water empty");
+			break;
+		case 0x10:						// It seems that these correpsonds with water empty
+			log_line("- Capsule mechanism jammed");
+			break;
+		case 0x11:
+			log_line("- haven't seen this (water empty + capsule jammed)...");
+			break;
+	}
+
+
+// |  B1  | 1xxx xxxx | Capsule engaged                                   |
+// |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips|
+// |      |           | It also seeems to be indicator of descaling       |
+// |      | xxx1 xxxx | Tray sensor tripped during brewing?               |
+// |      | xxxx 1xxx | Sleeping                                          |
+// |      | xxxx x1xx | Water pump engaged                                |
+// |      | xxxx xx1x | Awake, ok                                         |
+// |      | xxxx xxx1 | Water temperature low / set while sleeping        |
+	if ( 0x84 == (view.getUint8(1) & 0x84) ) {	// capsule engage + water pump engaged
+		log_line("- brewing coffee");
+	}
+	if ( 0x04 == (view.getUint8(1) & 0x84) ) {	// water pump engaged
+		log_line("- water pump engaged");
+	}
+	if ( 0x40 & view.getUint8(1) ) {	// tray open
+		log_line("- Tray open/sensor full");
+	}
+	if ( 0x09 == (view.getUint8(1) & 0x09 ) ) {
+		log_line("- Device is sleeping");
+	}
+	if ( 0x01 == (view.getUint8(1) & 0x09 ) ) {
+		log_line("- Low water");
+	}
+	if ( 0x02 & view.getUint8(1) ) {
+		log_line("- Awake, ok");
+	}
+
+
+// +------+-----------+---------------------------------------------------+
+// |  B4  | xx.. .... | Appears to be an error counter. It's incremented  |
+// |      |           | each time an error occurs. 00h,40h,80h,d0h,00h    |
+// |      |           | Maybe used to detect error (notifications)        |
+	var last_error = view.getUint8(4) & 0xC0;
+	log_line("- Last error: " +  last_error.toString(16));
+
+	var time_to_descale_needed = 0;
+	log_line("- BLE block length:" + view.byteLength );
+	switch (view.byteLength ) {
+		case 8:
+			time_to_descale_needed = view.getUint8(7);
+			// no break;
+		case 7:
+			time_to_descale_needed = time_to_descale_needed | (view.getUint8(6) << 8);
+			log_line("- Countdown to descale is needed: " + time_to_descale_needed);
+		default:
+			break;
+	}
+
+
+}
+
 
 function onDisconnected(event) {
   document.getElementById("log").innerHTML = "";
@@ -286,6 +358,7 @@ function onDisconnected(event) {
 function handleStatusNotification(event) {
   let view = event.target.value;
   parse_status(view);
+  extended_parse_status(view);
 }
 
 function DisplayCharInfo(characteristics) {

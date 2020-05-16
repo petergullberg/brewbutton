@@ -15,13 +15,19 @@ Brewbutton in the browser
 the Brewbutton html allows you to brew your coffee directly from the browser. It uses the Web Bluetooth API and does not require any installation or coding to make it work. You only need to get your AuthKey for your machine (See below). I have tested it with Chrome on W10, MAC and Android, and BlueFy for iOS. You should be able to test it right away, directly in browser.<br>
 https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html
 Once you have found your authKey you can add it to the URL, so the script uses that key:<br>
-https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html?authKey=PutYourKeyHere<br>
+https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html?authKey=PutYourAuthKeyHere<br>
 Your authkey should be 8 hexadecimal bytes without space<br>
 
-For iOS, you can use BlueFy<br>
-Below is a QR-code to run Web Bluetooth on iPhone BlueFy<br>
+BlueFy on iOS
+-------------
+For iOS, you can use BlueFy. Below is a QR-code to run Web Bluetooth on iPhone BlueFy<br>
 ![QR-code](qr_example.png)<br>
-bluefy://open?url=https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html?authKey=PutYourKeyHere<br>
+```
+bluefy://open?url=https://rawgit.com/petergullberg/brewbutton/master/brewbutton.html?authKey=PutYourAuthKeyHere<br>
+You can generate the QR-code URL here for example: https://www.qr-code-generator.com/
+Then you can print it, and put it on your machine if you want to be a little nerdy
+```
+
 
 
 
