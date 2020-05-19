@@ -268,6 +268,7 @@ Slider status
  |  B0  |    0x00   | Slider is open                                    |
  |      |    0x02   | Slider is closed                                  |
  +------+-----------+---------------------------------------------------+
+ This value is only present value.  
 ```
 
 Second status - tbd
