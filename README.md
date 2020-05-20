@@ -164,11 +164,11 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  +------+-----------+---------------------------------------------------+
  |  B0  | x1xx xxxx | Always 1                                          |
  |      | xxx1 xxx0 | Capsule mechanism jammed                          |
+ |      | xxxx x1xx | Descaling is needed                               |
  |      | xxxx xxx1 | Water is empty                                    |
  +------+-----------+---------------------------------------------------+
  |  B1  | 1xxx xxxx | Capsule engaged                                   |
  |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips|
- |      |           | It also seeems to be indicator of descaling       |
  |      | xxx1 xxxx | Tray sensor tripped during brewing?               |
  |      | xxxx 1xxx | Sleeping                                          |
  |      | xxxx x1xx | Water pump engaged                                |
@@ -192,7 +192,8 @@ It's default state in idle mode is: "40 02 01 E0 40 00 FF FF"
  |      |           | Appears to be a count-down that is used to        |
  |      |           | signal when descaling it needed when it reaches   |
  |      |           | 000h, probably starting from FFFFh                |
- |      |           | When it reached 0000h, it set B1.6.               |
+ |      |           | B6 is high-byte, and B7 is not always returned    |
+ |      |           | When it reaches 0000h, it set B0.2.               |
  |      |           | Before descaling counter starts, the B6-B7 are    |
  |      |           | not returned.                                     |
  |      |           | Unclear what the values actually represent        |
@@ -380,6 +381,3 @@ Specification and examples:
 
 ISSUE TRACKING ARDUINO VERSION
 ==============================
-There are some outstanding issues, will be further investigated.
-* Need to resolve this: when descaler is needed, there seem to be a discrepancy between B1.6 (Expert) or B0.2 (prodigio&milk). One or the other or both. This needs to be weeded out
-* ...

@@ -1,5 +1,22 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<style>
+		.button {
+		  background-color: #4CAF50;
+		  border: none;
+		  color: white;
+		  padding: 15px 32px;
+		  text-align: center;
+		  text-decoration: none;
+		  display: inline-block;
+		  font-size: 16px;
+		  margin: 4px 2px;
+		  cursor: pointer;
+		}
+		</style>
+		</head>
+
 <body>
 <!––
    Nespresso Expert - Web Bluetooth simple demo
@@ -25,13 +42,10 @@ AuthKey (Change this accordingly:):
 <!-- AuthKey is default to MY machine, change accordingly -->
 <input type="text" id="authKey" value="">
 <BR><BR>
-	<button onclick="onReload()">Reload page</button>
-	<button onclick="ConnectButton()">Connect</button>
-	<button onclick="StatusButton()">Status</button>
-	<button onclick="BrewButton()">Brew!</button>
-	<button onclick="ClearButton()">Clear!</button>
-	<button onclick="onCancel()">Cancel Brew!</button>
-
+	<button class="button" onclick="ConnectButton()">Connect</button>
+	<button class="button" onclick="StatusButton()">Status</button>
+	<button class="button" onclick="BrewButton()">Brew!</button>
+	<button class="button" onclick="onCancel()">Cancel Brew!</button>
 
 
 <BR><BR>
@@ -39,6 +53,8 @@ AuthKey (Change this accordingly:):
 <BR><BR>
 
 <textarea id="log" rows="15" cols="70" disabled></textarea><BR>
+<button class="button" onclick="ClearButton()">Clear!</button> <BR>
+<button class="button" onclick="onReload()">Reload page</button> <BR>
 
 <script>
 // GLOBALS
@@ -158,8 +174,8 @@ function check_respStatus( resp, sentCmd ) {
 				log_line("Brew cancelled");
 				break;
 			case 0x2412:
-				log_line('Insert POD');
-				status_line("Insert pod");
+				log_line('No capsule inserted');
+				status_line("No capsule inserted");
 				break;
 			case 0x3603:
 				log_line("command error");
@@ -277,12 +293,14 @@ function parse_status(view) {
 	status_line(val_buf);
 }
 function extended_parse_status(view) {
+	log_line("-------------");
 	log_line("Extended status:");
 // +------+-----------+---------------------------------------------------+
 // | Byte |    Bit    | Description                                       |
 // +------+-----------+---------------------------------------------------+
 // |  B0  | x1xx xxxx | Always 1                                          |
 // |      | xxx1 xxx0 | Capsule mechanism jammed                          |
+// |      | xxxx x1xx | Descaling is needed                               |
 // |      | xxxx xxx1 | Water is empty                                    |
 // +------+-----------+---------------------------------------------------+
 	switch ( view.getUint8(0) & 0x11 ) {
@@ -296,11 +314,11 @@ function extended_parse_status(view) {
 			log_line("- haven't seen this (water empty + capsule jammed)...");
 			break;
 	}
+	// Descaler checked further below
 
 
 // |  B1  | 1xxx xxxx | Capsule engaged                                   |
 // |      | x1xx xxxx | Tray open / tray sensor full. Dx when sensor trips|
-// |      |           | It also seeems to be indicator of descaling       |
 // |      | xxx1 xxxx | Tray sensor tripped during brewing?               |
 // |      | xxxx 1xxx | Sleeping                                          |
 // |      | xxxx x1xx | Water pump engaged                                |
@@ -333,17 +351,24 @@ function extended_parse_status(view) {
 	var last_error = view.getUint8(4) & 0xC0;
 	log_line("- Last error: " +  last_error.toString(16));
 
-	var time_to_descale_needed = 0;
-	log_line("- BLE block length:" + view.byteLength );
-	switch (view.byteLength ) {
-		case 8:
-			time_to_descale_needed = view.getUint8(7);
-			// no break;
-		case 7:
-			time_to_descale_needed = time_to_descale_needed | (view.getUint8(6) << 8);
-			log_line("- Countdown to descale is needed: " + time_to_descale_needed);
-		default:
-			break;
+	if ( 0x04 & view.getUint8(0) ) {	// tray open
+		log_line("- Descaling is needed");
+	}
+	else {
+		// Otherwise, check if descaler counter has started.
+		var time_to_descale_needed = 0;
+		log_line("- BLE block length:" + view.byteLength );
+		switch (view.byteLength ) {
+			case 8:
+				time_to_descale_needed = view.getUint8(7);
+				// no break;
+			case 7:
+				time_to_descale_needed = time_to_descale_needed | (view.getUint8(6) << 8);
+				log_line("- Countdown to descale is needed: " + time_to_descale_needed);
+			default:
+				//Nope, we could not find descaler counter...
+				break;
+		}
 	}
 
 
