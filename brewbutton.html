@@ -364,7 +364,11 @@ function extended_parse_status(view) {
 				// no break;
 			case 7:
 				time_to_descale_needed = time_to_descale_needed | (view.getUint8(6) << 8);
-				log_line("- Countdown to descale is needed: " + time_to_descale_needed);
+				// if counter is 0xFFFF, then don't present it.
+				if ( 0xFFFF != time_to_descale_needed ) {
+					log_line("- Countdown until descale is needed: " + time_to_descale_needed);
+				}
+				break;
 			default:
 				//Nope, we could not find descaler counter...
 				break;
