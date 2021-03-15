@@ -324,6 +324,8 @@ Caps remaining
 06aa3a15-f22a-11e3-9daa-0002a5d5c51b is the caps remaining in stock in hex format (if you have add them in the apps)
 Value got from 00:00 to 03:E8 (from 0 caps to 1000).
 ```
+The characteristics also notifies you, after brewing.
+
 06aa3a12-f22a-11e3-9daa-0002a5d5c51b
 44 09 80 0C C0 00 00
 44 09 80 2D C0 00 00
@@ -375,3 +377,4 @@ Specification and examples:
 
 ISSUE TRACKING ARDUINO VERSION
 ==============================
+* It seems that not all nespresso machines can use the prepare command, should maybe fix that
