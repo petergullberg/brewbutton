@@ -1,4 +1,3 @@
-Brewbutton (Android (ESP32) & Browser Web Bluetooth)
 Brewbutton (Arduino (ESP32) & Browser Web Bluetooth)
 ====================================================
 The nespresso expert is a piece of shit and the app even more. So this project aims to replace the mobile app, and allow you to brew your own stuff. The only reason I started banging my head on this BLE protocol, was that the default "lungo" on the front dial added too much water, making it undrinkable, and to overcome the crappy App and the Crappy default settings on the machine.
@@ -6,10 +5,8 @@ The nespresso expert is a piece of shit and the app even more. So this project a
 I have also contributed a little to the reverse engineering of the protocol, see below.
 As a base I started with the insights from: https://gist.github.com/farminf/94f681eaca2760212f457ac59da99f23
 
-The brewbutton Android
 The brewbutton Arduino!
 ----------------------
-The android brew-button is a simple device with a piece of code that connects to an nespresso machine, and when triggered by the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew.
 The ardunio brew-button is a simple device with a piece of code that connects to an nespresso machine, and when triggered by the IO PIN, it will send a simple brew command. Right now, it's hard-coded to a 130ml coffee recipe brew.
 My idea is to have a small brew button that can brew my morning coffe the way I want it.
 
