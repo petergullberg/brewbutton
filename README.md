@@ -381,3 +381,7 @@ ISSUE TRACKING ARDUINO VERSION
 * It seems that not all nespresso machines can use the prepare command, should maybe fix that
 =======
 >>>>>>> 1a43f480c63206d08cea9649ecca509d47cd1246
+
+Future plans
+============
+Find a way to "clone" a profile, and the capture the authentication credentials
